@@ -10,10 +10,13 @@ import {
   Res,
   Query,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { OrgService } from './org.service';
 import { Request, Response } from 'express';
-import  {ReqDTO,approvedDTO}  from './org.dto';
+import { ReqDTO, UpdateOrgDto, approvedDTO } from './org.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { OwnerGuard } from 'src/admin/admin.guard';
 @Controller('org')
 export class OrgController {
   constructor(private orgService: OrgService) {}
@@ -54,7 +57,20 @@ export class OrgController {
   // change org request status to approved
   @Put('/approveRequest')
   async approveOrgRequest(
-    @Body(ValidationPipe) approvedDTO: approvedDTO,@Req() req: Request, @Res() res: Response) {
+    @Body(ValidationPipe) approvedDTO: approvedDTO,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
     return this.orgService.approveOrgRequest(req, res);
+  }
+  //update org
+  @UseGuards(JwtAuthGuard, OwnerGuard)
+  @Put('/updateOrg')
+  async updateOrg(
+    @Body(ValidationPipe) updateOrgDto: UpdateOrgDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.orgService.updateOrganization(req, res, updateOrgDto);
   }
 }

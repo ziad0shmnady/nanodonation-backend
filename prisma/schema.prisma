@@ -39,6 +39,7 @@ model Organization {
   orgRequest            OrgRequest @relation(fields: [request_id], references: [request_id])
   request_id            String   @unique
   admin                 Admin[]
+  announcement          Announcement[]
   created_at            DateTime   @default(now())
   updated_at            DateTime   @updatedAt
 }
@@ -65,6 +66,16 @@ model Admin {
   role     Role         @default(onwer)
   org      Organization @relation(fields: [org_id], references: [org_id])
   org_id   String
+}
+
+model Announcement {
+  announcement_id String     @id @default(uuid())
+  message           String
+  type     String
+  org             Organization @relation(fields: [org_id], references: [org_id])
+  org_id          String
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
 }
 
 enum Role {

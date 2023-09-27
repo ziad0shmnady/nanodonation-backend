@@ -86,7 +86,7 @@ export class OrgService {
           request_id: request_id,
         },
       });
-      
+
       const org = await this.prismService.organization.create({
         data: {
           name: orgRequest.name,
@@ -118,6 +118,30 @@ export class OrgService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  //update organization to add the rest of the attributes if it is in body 
-  
+  //update organization to add the rest of the attributes if it is in body
+  async updateOrganization(req, res, updateOrgDto) {
+    try {
+      //get org id from req.user
+      const {org_id} =await this.prismService.admin.findUnique({
+        where: {
+          admin_id: req.user.userId,
+        },
+        select: {
+          org_id: true,
+        },
+      });
+    
+      const org = await this.prismService.organization.update({
+        where: {
+          org_id: org_id,
+        },
+        data: {
+          ...updateOrgDto,
+        },
+      });
+      return res.status(HttpStatus.OK).send(org);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }
