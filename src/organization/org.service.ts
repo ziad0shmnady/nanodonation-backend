@@ -144,4 +144,19 @@ export class OrgService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  // sort orgReq by created At
+
+  async sortOrgReqByCreatedAt(req, res) {
+    try {
+      const requests = await this.prismService.orgRequest.findMany({
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+      return res.status(HttpStatus.OK).send(requests);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

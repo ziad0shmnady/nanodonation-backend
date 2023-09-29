@@ -5,8 +5,15 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  Validate,
+  ValidationArguments,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
 } from 'class-validator';
 
+import { z } from 'zod';
+import { UserService } from './user.service';
+import { Prisma } from '@prisma/client';
 export class UserDTO {
   user_id?: string;
 
@@ -20,16 +27,34 @@ export class UserDTO {
 
   @IsNotEmpty()
   @IsEmail()
+
+  // @Validate(IsUniqueEmailValidator)
   email: string;
 
   @IsNotEmpty()
   @IsString()
   password: string;
   @IsNotEmpty()
-//   @IsDate()
+  //   @IsDate()
   DOB: Date;
 
   createdAt: Date;
 
   updatedAt: Date;
+}
+
+export class UpdateUserDto implements Prisma.UserUpdateInput {
+  @IsOptional()
+  @IsString()
+  first_name?: string | Prisma.StringFieldUpdateOperationsInput;
+  @IsOptional()
+  @IsString()
+  last_name?: string | Prisma.StringFieldUpdateOperationsInput;
+  @IsOptional()
+  @IsString()
+  @IsEmail()
+  email?: string | Prisma.StringFieldUpdateOperationsInput;
+  @IsOptional()
+  @IsString()
+  DOB?: string | Prisma.StringFieldUpdateOperationsInput;
 }

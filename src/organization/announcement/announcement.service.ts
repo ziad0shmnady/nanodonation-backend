@@ -7,7 +7,7 @@ export class AnnouncementService {
     //create announcement
     async createAnnouncement(req, res,AnnouncementDto) {
       try {
-        console.log(req);
+    
         const {org_id} =await this.prismaService.admin.findUnique({
           where: {
             admin_id: req.user.userId,

@@ -11,19 +11,21 @@ datasource db {
 }
 
 model User {
-  user_id    String @id @default(uuid())
+  user_id    String   @id @default(uuid())
   first_name String
   last_name  String
-  email      String @unique
+  email      String   @unique
   password   String
   DOB        String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Organization {
-  org_id                String     @id @default(uuid())
+  org_id                String         @id @default(uuid())
   name                  String
-  merchant_id           String     @unique
-  email                 String     @unique
+  merchant_id           String         @unique
+  email                 String         @unique
   phone                 String
   payment_processor     String
   company_registeration String
@@ -36,46 +38,47 @@ model Organization {
   linkedin              String?
   tiktok                String?
   // Remove the orgRequest field
-  orgRequest            OrgRequest @relation(fields: [request_id], references: [request_id])
-  request_id            String   @unique
+  orgRequest            OrgRequest     @relation(fields: [request_id], references: [request_id])
+  request_id            String         @unique
   admin                 Admin[]
   announcement          Announcement[]
-  created_at            DateTime   @default(now())
-  updated_at            DateTime   @updatedAt
+  created_at            DateTime       @default(now())
+  updated_at            DateTime       @updatedAt
 }
 
 // Define the OrgRequest model
 model OrgRequest {
   request_id            String        @id @default(uuid())
   name                  String
-  email                 String
+  email                 String       @unique
   phone                 String
   status                Status        @default(pending)
   company_registeration String
   created_at            DateTime      @default(now())
   updated_at            DateTime      @updatedAt
   // Add the org_id field to establish the one-to-one relationship
- organization          Organization? 
-
+  organization          Organization?
 }
 
 model Admin {
-  admin_id String       @id @default(uuid())
-  name     String
-  password String
-  role     Role         @default(onwer)
-  org      Organization @relation(fields: [org_id], references: [org_id])
-  org_id   String
+  admin_id   String       @id @default(uuid())
+  name       String
+  password   String
+  role       Role         @default(onwer)
+  org        Organization @relation(fields: [org_id], references: [org_id])
+  org_id     String
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
 }
 
 model Announcement {
-  announcement_id String     @id @default(uuid())
-  message           String
-  type     String
+  announcement_id String       @id @default(uuid())
+  message         String
+  type            String
   org             Organization @relation(fields: [org_id], references: [org_id])
   org_id          String
-  created_at      DateTime   @default(now())
-  updated_at      DateTime   @updatedAt
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
 }
 
 enum Role {

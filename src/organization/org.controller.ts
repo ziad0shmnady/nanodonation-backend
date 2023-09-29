@@ -11,17 +11,20 @@ import {
   Query,
   ValidationPipe,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { OrgService } from './org.service';
 import { Request, Response } from 'express';
 import { ReqDTO, UpdateOrgDto, approvedDTO } from './org.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { OwnerGuard } from 'src/admin/admin.guard';
+import { ZodValidationReqEmail } from './org-validation.pipe';
 @Controller('org')
 export class OrgController {
   constructor(private orgService: OrgService) {}
 
   // create new org request
+  @UsePipes(ZodValidationReqEmail)
   @Post('/createRequest')
   async createOrgRequest(
     @Body(ValidationPipe) ReqDTO: ReqDTO,
@@ -72,5 +75,11 @@ export class OrgController {
     @Res() res: Response,
   ) {
     return this.orgService.updateOrganization(req, res, updateOrgDto);
+  }
+
+  //sort org by created at
+  @Get('/sortOrgByCreatedAt')
+  async sortOrgByCreatedAt(@Req() req: Request, @Res() res: Response) {
+    return this.orgService.sortOrgReqByCreatedAt(req, res);
   }
 }
