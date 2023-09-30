@@ -5,7 +5,7 @@ import { Strategy } from 'passport-local'; // You can use 'passport-jwt' for JWT
 import { AuthService } from './auth.service';
 
 @Injectable()
-export class AdminStrategy extends PassportStrategy(Strategy, 'admin') {
+export class SuperAdminStrategy extends PassportStrategy(Strategy, 'super-admin') {
   constructor(private authService: AuthService) {
     super();
   }
@@ -13,7 +13,7 @@ export class AdminStrategy extends PassportStrategy(Strategy, 'admin') {
   async validate(email: string, password: string): Promise<any> {
     // Implement admin validation logic here
     // You can use the same `validateUser` method from `AuthService` or create a separate method for admin validation
-    const isAdmin = await this.authService.validateAdmin(email, password);
+    const isAdmin = await this.authService.validateSuperAdmin(email, password);
     
     if (!isAdmin) {
         throw new UnauthorizedException();

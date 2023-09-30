@@ -1,23 +1,20 @@
 import { Prisma } from '@prisma/client';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class adminDTO {
-  @IsNotEmpty()
+export class SuperAdminDto {
   @IsString()
+  @IsNotEmpty()
   name: string;
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   @IsEmail()
   email: string;
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   password: string;
-  @IsNotEmpty()
-  @IsString()
-  role: Role;
 }
 
-export class updateAdminDto implements Prisma.AdminUpdateInput {
+export class SuperAdminUpdateDto implements Prisma.superAdminUpdateInput {
   @IsOptional()
   @IsString()
   name?: string | Prisma.StringFieldUpdateOperationsInput;
@@ -28,13 +25,4 @@ export class updateAdminDto implements Prisma.AdminUpdateInput {
   @IsOptional()
   @IsString()
   password?: string | Prisma.StringFieldUpdateOperationsInput;
-  @IsOptional()
-  @IsString()
-  
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput;
-}
-
-enum Role {
-  owner,
-  employee,
 }

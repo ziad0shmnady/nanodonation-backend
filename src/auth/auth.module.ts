@@ -13,13 +13,16 @@ import { JwtStrategy } from './jwt.startegy';
 import{JwtAuthGuard} from './jwt-auth.guard';
 import { AdminStrategy } from './admin.strategy';
 import { AdminService } from 'src/admin/admin.service';
+import { SuperAdminStrategy } from './superAdmin.strategy';
+import { SuperAdminService } from 'src/superAdmin/superAdmin.service'; // import SuperAdminService
+
 @Module({
   imports: [PassportModule,UserModule,JwtModule.register({
     secret: 'secret',
     signOptions: { expiresIn: '1d' },
   })],
-  providers: [AuthService,LocalStrategy,JwtStrategy,AdminStrategy,AdminService],
+  providers: [AuthService,LocalStrategy,JwtStrategy,AdminStrategy,AdminService,SuperAdminStrategy,SuperAdminService], // add SuperAdminService to providers array
   controllers: [AuthController],
-  exports: [AuthService,JwtStrategy,],
+  exports: [AuthService,JwtStrategy,SuperAdminService], // add SuperAdminService to exports array
 })
 export class AuthModule {}

@@ -7,3 +7,6 @@ export class LocalAuthGuard extends AuthGuard('local'){
 export class AdminAuthGuard extends AuthGuard('admin') {
     
 }
+export class SuperAdminAuthGuard extends AuthGuard('super-admin') {
+    
+}

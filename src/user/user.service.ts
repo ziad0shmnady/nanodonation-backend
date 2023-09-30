@@ -7,7 +7,7 @@ export class UserService {
   constructor(private prismService: PrismaService) {}
 
   // create a new user
-  async createUser(req, res, UserDTO) {
+  async createUser(req, res, UserDTO): Promise<UserDTO> {
     const salt = await bcrypt.genSalt();
     //check if user already exists
 
@@ -33,7 +33,7 @@ export class UserService {
   }
 
   // get all users
-  async getAllUsers(req, res) {
+  async getAllUsers(req, res): Promise<UserDTO> {
     try {
       const users = await this.prismService.user.findMany();
 
@@ -46,7 +46,7 @@ export class UserService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  async getUserById(req, res, id) {
+  async getUserById(req, res, id): Promise<UserDTO> {
     try {
       console.log(id);
 
@@ -60,7 +60,7 @@ export class UserService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  async updateUser(req, res, UpdateUserDto) {
+  async updateUser(req, res, UpdateUserDto): Promise<UserDTO> {
     try {
       const user = await this.prismService.user.update({
         where: {
@@ -75,7 +75,7 @@ export class UserService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  async getAdminById(id: string) {
+  async getUserrById(id: string) {
     return await this.prismService.user.findUnique({
       where: {
         user_id: id,

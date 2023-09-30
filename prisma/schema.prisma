@@ -50,7 +50,7 @@ model Organization {
 model OrgRequest {
   request_id            String        @id @default(uuid())
   name                  String
-  email                 String       @unique
+  email                 String        @unique
   phone                 String
   status                Status        @default(pending)
   company_registeration String
@@ -61,9 +61,11 @@ model OrgRequest {
 }
 
 model Admin {
-  admin_id   String       @id @default(uuid())
-  name       String
-  password   String
+  admin_id String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+
   role       Role         @default(onwer)
   org        Organization @relation(fields: [org_id], references: [org_id])
   org_id     String
@@ -71,6 +73,14 @@ model Admin {
   updated_at DateTime     @updatedAt
 }
 
+model superAdmin {
+  super_admin_id String   @id @default(uuid())
+  name           String
+  email          String   @unique
+  password       String
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+}
 model Announcement {
   announcement_id String       @id @default(uuid())
   message         String

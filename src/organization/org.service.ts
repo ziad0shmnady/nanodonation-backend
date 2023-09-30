@@ -63,12 +63,16 @@ export class OrgService {
     }
   }
   //get org request by name using query
-  async getOrgRequestByName(req, res, query) {
+  async getOrgRequestByName(req: any, res: any, query: any) {
     try {
-      console.log(query);
+     
+      const { name } = query;
       const request = await this.prismService.orgRequest.findMany({
         where: {
-          name: query,
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
         },
       });
       return res.status(HttpStatus.OK).send(request);
@@ -102,6 +106,7 @@ export class OrgService {
         data: {
           name: `${orgRequest.name}` + ' admin',
           password: passwordGenerator(8, false),
+          email: orgRequest.email,
           org_id: org.org_id,
         },
       });

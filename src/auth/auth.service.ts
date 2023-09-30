@@ -33,12 +33,32 @@ export class AuthService {
   }
 
   async validateAdmin(
-    name: string,
+    email: string,
     password: string,
   ): Promise<any | undefined> {
-    const admin = await this.prisma.admin.findFirst({
+    const admin = await this.prisma.admin.findUnique({
       where: {
-        name: name,
+        email: email,
+      },
+    });
+
+    if (!admin) {
+      throw new BadRequestException('Admin not found');
+    }
+
+    if (!(password === admin.password)) {
+      throw new BadRequestException('Invalid password');
+    }
+
+    return admin;
+  }
+  async validateSuperAdmin(
+    email: string,
+    password: string,
+  ): Promise<any | undefined> {
+    const admin = await this.prisma.superAdmin.findUnique({
+      where: {
+        email: email,
       },
     });
 
@@ -66,8 +86,20 @@ export class AuthService {
 
   async generateAdminJwt(admin, res) {
     const payload = {
-      email: admin.name,
+      email: admin.email,
       sub: admin.admin_id,
+      // Add any additional admin claims as needed
+    };
+
+    return res.json({
+      access_token: this.jwtService.sign(payload),
+    });
+  }
+
+  async generateSuperAdminJwt(admin, res) {
+    const payload = {
+      email: admin.email,
+      sub: admin.super_admin_id,
       // Add any additional admin claims as needed
     };
 
