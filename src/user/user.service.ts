@@ -48,8 +48,6 @@ export class UserService {
   }
   async getUserById(req, res, id): Promise<UserDTO> {
     try {
-      console.log(id);
-
       const user = await this.prismService.user.findUnique({
         where: {
           user_id: id,
@@ -75,13 +73,54 @@ export class UserService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+  async deleteUser(req, res, id): Promise<UserDTO> {
+    try {
+      const user = await this.prismService.user.delete({
+        where: {
+          user_id: id,
+        },
+      });
+      return res.status(HttpStatus.OK).send('user deleted successfully');
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
   async getUserrById(id: string) {
     return await this.prismService.user.findUnique({
       where: {
         user_id: id,
       },
     });
-  
   }
 
+  //sort users by created at
+  async sortUsersByCreatedAt(req, res, sort_type): Promise<UserDTO[]> {
+    try {
+      const users = await this.prismService.user.findMany({
+        orderBy: {
+          created_at: sort_type,
+        },
+      });
+      return res.status(HttpStatus.OK).send(users);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+  // search user by name
+  async getUserByName(req, res, name): Promise<UserDTO> {
+    try {
+      const user = await this.prismService.user.findMany({
+        where: {
+          //use contains to search for a substring
+          first_name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
+      });
+      return res.status(HttpStatus.OK).send(user);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

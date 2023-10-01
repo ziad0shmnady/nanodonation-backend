@@ -29,4 +29,5 @@ export class AnnouncementService {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
     }
+    
 }

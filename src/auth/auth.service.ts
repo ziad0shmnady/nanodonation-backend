@@ -77,6 +77,7 @@ export class AuthService {
     const payload = {
       email: user.email,
       sub: user.user_id,
+      Role: 'User',
     };
 
     return res.json({
@@ -88,6 +89,7 @@ export class AuthService {
     const payload = {
       email: admin.email,
       sub: admin.admin_id,
+      Role: 'Admin',
       // Add any additional admin claims as needed
     };
 
@@ -100,6 +102,7 @@ export class AuthService {
     const payload = {
       email: admin.email,
       sub: admin.super_admin_id,
+      Role: 'SuperAdmin',
       // Add any additional admin claims as needed
     };
 

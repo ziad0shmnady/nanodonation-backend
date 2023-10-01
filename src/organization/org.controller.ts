@@ -15,59 +15,27 @@ import {
 } from '@nestjs/common';
 import { OrgService } from './org.service';
 import { Request, Response } from 'express';
-import { ReqDTO, UpdateOrgDto, approvedDTO } from './org.dto';
+import { OrgDTO, UpdateOrgDto } from './org.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { OwnerGuard } from 'src/admin/admin.guard';
-import { ZodValidationReqEmail } from './org-validation.pipe';
+import { RolesGuard } from 'src/roles/role.guard';
+import { Roles } from 'src/roles/roles.decorator';
+import { Role } from 'src/roles/role.enum';
+
 @Controller('org')
 export class OrgController {
   constructor(private orgService: OrgService) {}
 
-  // create new org request
-  @UsePipes(ZodValidationReqEmail)
-  @Post('/createRequest')
-  async createOrgRequest(
-    @Body(ValidationPipe) ReqDTO: ReqDTO,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    return this.orgService.createOrgRequest(req, res);
+  //get all org
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SuperAdmin)
+  @Get('/getAllOrg')
+  async getAllOrg(@Req() req: Request, @Res() res: Response) {
+    return this.orgService.getAllOrgs(req, res);
   }
-  // get all org request
-  @Get('/getAllRequests')
-  async getAllOrgRequests(@Req() req: Request, @Res() res: Response) {
-    return this.orgService.getAllOrgRequests(req, res);
-  }
-  // change org request status
-  @Put('/changeRequestStatus')
-  async changeOrgRequestStatus(@Req() req: Request, @Res() res: Response) {
-    return this.orgService.changeOrgRequestStatus(req, res);
-  }
-  // get org request by id
-  @Get('/getRequestById/:request_id')
-  async getOrgRequestById(@Req() req: Request, @Res() res: Response) {
-    return this.orgService.getOrgRequestById(req, res);
-  }
-  // get org request by name using query
-  @Get('/getRequestByName')
-  async getOrgRequestByName(
-    @Query('name') query: string,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    return this.orgService.getOrgRequestByName(req, res, query);
-  }
-  // change org request status to approved
-  @Put('/approveRequest')
-  async approveOrgRequest(
-    @Body(ValidationPipe) approvedDTO: approvedDTO,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    return this.orgService.approveOrgRequest(req, res);
-  }
-  //update org
-  @UseGuards(JwtAuthGuard, OwnerGuard)
+  //chage org request status
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SuperAdmin)
   @Put('/updateOrg')
   async updateOrg(
     @Body(ValidationPipe) updateOrgDto: UpdateOrgDto,
@@ -76,10 +44,52 @@ export class OrgController {
   ) {
     return this.orgService.updateOrganization(req, res, updateOrgDto);
   }
-
+  //chage org request status
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SuperAdmin)
   //sort org by created at
   @Get('/sortOrgByCreatedAt')
-  async sortOrgByCreatedAt(@Req() req: Request, @Res() res: Response) {
-    return this.orgService.sortOrgReqByCreatedAt(req, res);
+  async sortOrgByCreatedAt(
+    @Query('sort_type') sort_type: string, //dsec or asc
+
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.orgService.sortOrgReqByCreatedAt(req, res, sort_type);
+  }
+
+  //get org by id
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SuperAdmin)
+  @Get('/getOrgById/:id')
+  async getOrgById(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.orgService.getOrgById(req, res, id);
+  }
+
+  //get org by name
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SuperAdmin)
+  @Get('/getOrgByName')
+  async getOrgByName(
+    @Query('name') name: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.orgService.getOrgByName(req, res, name);
+  }
+  //delete org
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SuperAdmin)
+  @Delete('/deleteOrg/:id')
+  async deleteOrg(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.orgService.deleteOrg(req, res, id);
   }
 }

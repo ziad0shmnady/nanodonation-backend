@@ -9,12 +9,16 @@ import {
 } from 'class-validator';
 import { Prisma } from '@prisma/client';
 
-export class ReqDTO {
-  user_id?: string;
+export class OrgDTO {
+  org_id?: string;
 
   @IsNotEmpty()
   @IsString()
   name: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 
   @IsNotEmpty()
   @IsString()
@@ -22,21 +26,51 @@ export class ReqDTO {
 
   @IsNotEmpty()
   @IsString()
-  company_registeration;
+  company_registeration: string;
 
   @IsNotEmpty()
-  @IsEmail()
-  email: string;
+  @IsString()
+  merchant_id: string;
+
+  @IsNotEmpty()
+  @IsString()
+  payment_processor: string;
+
+  @IsNotEmpty()
+  @IsString()
+  logo: string;
+
+  @IsNotEmpty()
+  @IsString()
+  primary_color: string;
+
+  @IsOptional()
+  @IsString()
+  secondary_color: string;
+
+  @IsOptional()
+  @IsString()
+  facebook: string;
+
+  @IsOptional()
+  @IsString()
+  twitter: string;
+
+  @IsOptional()
+  @IsString()
+  instagram: string;
+
+  @IsOptional()
+  @IsString()
+  linkedin: string;
+
+  @IsOptional()
+  @IsString()
+  tiktok: string;
+ 
 }
 
-export class approvedDTO {
-  @IsNotEmpty()
-  merchant_id;
-  @IsNotEmpty()
-  payment_processor;
-  @IsNotEmpty()
-  request_id;
-}
+
 
 export class UpdateOrgDto implements Prisma.OrganizationUpdateInput {
   @IsOptional()

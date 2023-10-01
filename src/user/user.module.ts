@@ -7,6 +7,7 @@ import { AdminService } from 'src/admin/admin.service';
 
 import { PrismaClientValidationError } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SuperAdminService } from 'src/superAdmin/superAdmin.service';
 // import { IsEmailUniqueConstraint } from './user.constraint';
 
 
@@ -19,7 +20,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
     }),
   ],
   controllers: [UserController,],
-  providers: [UserService,AdminService,PrismaService],
+  providers: [UserService,AdminService,PrismaService,SuperAdminService],
   exports:[UserService]
 })
 export class UserModule {}
