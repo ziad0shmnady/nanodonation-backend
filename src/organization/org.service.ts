@@ -7,7 +7,33 @@ import { OrgDTO } from './org.dto';
 @Injectable()
 export class OrgService {
   constructor(private prismService: PrismaService) {}
- //get all orgs
+
+  async createOrg(req, res, createOrgDto): Promise<OrgDTO> {
+    try {
+      //create org
+      const org = await this.prismService.organization.create({
+        data: {
+          ...createOrgDto,
+        },
+      });
+      //create admin
+      const admin = await this.prismService.admin.create({
+        data: {
+          name: `${org.name}` + ' admin',
+          admin_id: randomUUID(),
+          org_id: org.org_id,
+          email: createOrgDto.email,
+          password: passwordGenerator(12, false),
+          role: 'owner',
+        },
+      });
+      return res.status(HttpStatus.OK).send({ org });
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  //get all orgs
   async getAllOrgs(req, res): Promise<OrgDTO> {
     try {
       const orgs = await this.prismService.organization.findMany();
@@ -24,7 +50,7 @@ export class OrgService {
   async updateOrganization(req, res, updateOrgDto): Promise<OrgDTO> {
     try {
       //get org id from req.user
-      const {org_id} =await this.prismService.admin.findUnique({
+      const { org_id } = await this.prismService.admin.findUnique({
         where: {
           admin_id: req.user.userId,
         },
@@ -32,7 +58,7 @@ export class OrgService {
           org_id: true,
         },
       });
-    
+
       const org = await this.prismService.organization.update({
         where: {
           org_id: org_id,
@@ -49,7 +75,7 @@ export class OrgService {
 
   // sort orgReq by created At
 
-  async sortOrgReqByCreatedAt(req, res,sort_type): Promise<OrgDTO> {
+  async sortOrgReqByCreatedAt(req, res, sort_type): Promise<OrgDTO> {
     try {
       const requests = await this.prismService.orgRequest.findMany({
         orderBy: {
@@ -105,10 +131,11 @@ export class OrgService {
           org_id: id,
         },
       });
-      return res.status(HttpStatus.OK).send('org and admins who has this org deleted successfully');
+      return res
+        .status(HttpStatus.OK)
+        .send('org and admins who has this org deleted successfully');
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  
 }

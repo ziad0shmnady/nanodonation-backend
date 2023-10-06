@@ -21,13 +21,14 @@ import { UUID } from 'crypto';
 import { RolesGuard } from 'src/roles/role.guard';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/role.enum';
+import { ZodValidationEmail } from './admin-zod.pipe';
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   // get all admins
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin, Role.Admin)
+  @Roles(Role.SuperAdmin, Role.Owner)
   @Get('/getAllAdmins')
   async getAllAdmins(@Req() req: Request, @Res() res: Response) {
     return this.adminService.getAllAdmins(req, res);
@@ -35,8 +36,8 @@ export class AdminController {
 
   //create new admin
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin, Role.Admin)
-  @UsePipes(ValidationPipe)
+  @Roles(Role.SuperAdmin, Role.Owner)
+  @UsePipes(ValidationPipe,ZodValidationEmail)
   @Post('/createAdmin')
   async createAdmin(
     @Req() req: Request,
@@ -48,8 +49,8 @@ export class AdminController {
 
   //update admin
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin, Role.Admin)
-  @UsePipes(ValidationPipe)
+  @Roles(Role.SuperAdmin, Role.Owner)
+  @UsePipes(ValidationPipe,ZodValidationEmail)
   @Put('/updateAdmin')
   async updateAdmin(
     @Query('admin_id') admin_id: UUID,
@@ -62,7 +63,7 @@ export class AdminController {
 
   //delete admin
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin, Role.Admin)
+  @Roles(Role.SuperAdmin, Role.Owner)
   @Delete('/deleteAdmin')
   async deleteAdmin(
     @Query('admin_id') admin_id: UUID,
@@ -74,7 +75,7 @@ export class AdminController {
 
   // get admin by name
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin, Role.Admin)
+  @Roles(Role.SuperAdmin, Role.Owner)
   @Get('/getAdminByName')
   async getAdminByName(
     @Query('name') name: string,

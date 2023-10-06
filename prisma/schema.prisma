@@ -38,8 +38,8 @@ model Organization {
   linkedin              String?
   tiktok                String?
   // Remove the orgRequest field
-  orgRequest            OrgRequest     @relation(fields: [request_id], references: [request_id])
-  request_id            String         @unique
+  orgRequest            OrgRequest?     @relation(fields: [request_id], references: [request_id])
+  request_id            String?         @unique
   admin                 Admin[]
   announcement          Announcement[]
   created_at            DateTime       @default(now())
@@ -66,7 +66,7 @@ model Admin {
   email    String @unique
   password String
 
-  role       Role         @default(onwer)
+  role       Role         @default(owner)
   org        Organization @relation(fields: [org_id], references: [org_id])
   org_id     String
   created_at DateTime     @default(now())
@@ -92,7 +92,7 @@ model Announcement {
 }
 
 enum Role {
-  onwer
+  owner
   employee
 }
 

@@ -86,10 +86,15 @@ export class AuthService {
   }
 
   async generateAdminJwt(admin, res) {
+    const adminn = await this.prisma.admin.findUnique({
+      where: {
+        email: admin.email,
+      },
+    });
     const payload = {
       email: admin.email,
       sub: admin.admin_id,
-      Role: 'Admin',
+      Role: adminn.role,
       // Add any additional admin claims as needed
     };
 

@@ -26,6 +26,18 @@ import { Role } from 'src/roles/role.enum';
 export class OrgController {
   constructor(private orgService: OrgService) {}
 
+
+  //create org 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SuperAdmin)
+  @Post('/createOrg')
+  async createOrg(
+    @Body(ValidationPipe) createOrgDto: OrgDTO,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.orgService.createOrg(req, res, createOrgDto);
+  }
   //get all org
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SuperAdmin)

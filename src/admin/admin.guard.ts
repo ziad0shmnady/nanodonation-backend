@@ -12,7 +12,7 @@ export class OwnerGuard implements CanActivate {
       // Check if the userID is an admin
       const admin = await this.adminService.getAdminById(user.userId);
 
-      if (admin.role == 'onwer') {
+      if (admin.role == 'owner') {
         return true; // User is an admin
       }
 

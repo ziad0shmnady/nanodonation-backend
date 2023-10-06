@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { updateAdminDto } from './admin.dto';
+import { updateAdminDto, adminDTO } from './admin.dto';
 import { UserDTO } from 'src/user/user.dto';
 @Injectable()
 export class AdminService {
@@ -31,9 +31,10 @@ export class AdminService {
     throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
   }
 
-  async createAdmin(req, res, adminDTO): Promise<UserDTO> {
+  async createAdmin(req, res, adminDTO): Promise<adminDTO> {
     const salt = await bcrypt.genSalt();
     //check if user already exists
+
     //get org id from admin
     const org = await this.prisma.admin.findUnique({
       where: {
@@ -43,12 +44,17 @@ export class AdminService {
         org_id: true,
       },
     });
+    if (!org) {
+      var orgId = adminDTO.org_id;
+    } else {
+      orgId = org.org_id;
+    }
 
     const admin = await this.prisma.admin.create({
       data: {
         ...adminDTO,
 
-        org_id: org.org_id,
+        org_id: orgId,
       },
     });
     return res.status(HttpStatus.CREATED).send(admin);
@@ -103,4 +109,16 @@ export class AdminService {
     }
   }
 
+  async getAdminByEmail(email: string) {
+    try {
+      const admin = await this.prisma.admin.findUnique({
+        where: {
+          email: email,
+        },
+      });
+      return admin;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

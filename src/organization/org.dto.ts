@@ -40,7 +40,7 @@ export class OrgDTO {
   @IsString()
   logo: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   primary_color: string;
 

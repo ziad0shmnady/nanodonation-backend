@@ -15,6 +15,9 @@ export class adminDTO {
   @IsNotEmpty()
   @IsString()
   role: Role;
+  @IsOptional()
+  @IsString()
+  org_id?: string;
 }
 
 export class updateAdminDto implements Prisma.AdminUpdateInput {

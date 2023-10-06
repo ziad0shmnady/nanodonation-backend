@@ -16,7 +16,7 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-  
+    // console.log(requiredRoles);
     if (!requiredRoles) {
       return true;
     }
@@ -26,7 +26,7 @@ export class RolesGuard implements CanActivate {
     if (!role) {
         throw new UnauthorizedException('You do not have the necessary permissions.');
     }
-    // console.log(role);
+    // console.log('sucess');
     return role;
   }
 }
