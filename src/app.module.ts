@@ -9,6 +9,8 @@ import { AdminModule } from './admin/admin.module';
 import { SuperAdminModule } from './superAdmin/superAdmin.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { DonationModule } from './donation/donation.module';
+import { Donation_categoryModule } from './Donation_category/Donation_category.module';
 @Module({
   imports: [
     ConfigModule.forRoot({}),
@@ -23,6 +25,8 @@ import { APP_GUARD } from '@nestjs/core';
     AuthModule,
     AdminModule,
     SuperAdminModule,
+    DonationModule,
+    Donation_categoryModule
   ],
   controllers: [AppController],
 

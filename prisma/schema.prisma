@@ -17,6 +17,7 @@ model User {
   email      String   @unique
   password   String
   DOB        String
+  donation   Donation[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
@@ -42,6 +43,9 @@ model Organization {
   request_id            String?         @unique
   admin                 Admin[]
   announcement          Announcement[]
+  donation              Donation[]
+  donation_category     Donation_Category[]
+
   created_at            DateTime       @default(now())
   updated_at            DateTime       @updatedAt
 }
@@ -89,6 +93,33 @@ model Announcement {
   org_id          String
   created_at      DateTime     @default(now())
   updated_at      DateTime     @updatedAt
+}
+
+model Donation {
+  donation_id String   @id @default(uuid())
+  amount      Float
+  transaction_id String?
+  transaction String?
+
+  org          Organization? @relation(fields: [org_id], references: [org_id])
+  org_id       String?
+  user         User  ?       @relation(fields: [user_id], references: [user_id])
+  user_id      String?
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+}
+
+model Donation_Category {
+  donation_category_id String              @id @default(uuid())
+  name                 String
+  description          String
+  parent_id            String?
+  donation_parent      Donation_Category? @relation("donation_category_children", fields: [parent_id], references: [donation_category_id])
+  children             Donation_Category[] @relation("donation_category_children")
+  org                  Organization?       @relation(fields: [org_id], references: [org_id])
+  org_id               String?
+  created_at           DateTime            @default(now())
+  updated_at           DateTime            @updatedAt
 }
 
 enum Role {

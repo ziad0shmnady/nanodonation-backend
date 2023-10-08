@@ -1,0 +1,37 @@
+import { Prisma } from '@prisma/client';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
+export class createDonation_categoryDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+  @IsString()
+  @IsOptional()
+  parent_id?: string;
+  @IsString()
+  @IsOptional()
+  org_id?: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export class updateDonation_categoryDto
+  implements Prisma.Donation_CategoryUpdateInput
+{
+  @IsString()
+  @IsNotEmpty()
+  name: string | Prisma.StringFieldUpdateOperationsInput;
+  @IsString()
+  @IsNotEmpty()
+  description: string | Prisma.StringFieldUpdateOperationsInput;
+  @IsString()
+  @IsOptional()
+  parent_id?: string | Prisma.StringFieldUpdateOperationsInput;
+  @IsString()
+  @IsOptional()
+  org_id?: string | Prisma.StringFieldUpdateOperationsInput;
+  updated_at: Date;
+}
