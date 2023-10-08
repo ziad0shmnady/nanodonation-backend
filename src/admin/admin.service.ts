@@ -15,9 +15,34 @@ export class AdminService {
     });
   }
 
-  async getAllAdmins(req, res): Promise<UserDTO> {
+  async getAllAdmins(req, res, filter_name, sort_type): Promise<adminDTO> {
     try {
-      const admin = await this.prisma.admin.findMany();
+      const org = await this.prisma.admin.findUnique({
+        where: {
+          admin_id: req.user.userId,
+        },
+        select: {
+          org_id: true,
+        },
+      });
+      let orgId: any;
+      if (!org) {
+        orgId = req.body.org_id;
+      } else {
+        orgId = org.org_id;
+      }
+      const admin = await this.prisma.admin.findMany({
+        where: {
+          name: {
+            contains: filter_name,
+            mode: 'insensitive',
+          },
+          org_id: orgId,
+        },
+        orderBy: {
+          created_at: sort_type,
+        },
+      });
       //check if user returm empty array
       if (admin.length === 0) {
         throw new HttpException('No users found', HttpStatus.NOT_FOUND);
@@ -67,9 +92,18 @@ export class AdminService {
     admin_id,
   ): Promise<updateAdminDto> {
     try {
+      if (
+        req.user.userId &&
+        (req.user.role == 'owner' || req.user.role == 'employee')
+      ) {
+        var adminId = req.user.userId;
+      } else {
+        adminId = admin_id;
+      }
+
       const admin = await this.prisma.admin.update({
         where: {
-          admin_id: admin_id,
+          admin_id: adminId,
         },
         data: {
           ...updateAdminDto,
@@ -92,15 +126,12 @@ export class AdminService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  async getAdminByName(req: any, res: any, name: string) {
+  // get admin by id
+  async getAdminnById(req, res, admin_id): Promise<adminDTO> {
     try {
-      const admin = await this.prisma.admin.findMany({
+      const admin = await this.prisma.admin.findUnique({
         where: {
-          //use contains to search for a substring
-          name: {
-            contains: name,
-            mode: 'insensitive',
-          },
+          admin_id: admin_id,
         },
       });
       return res.status(HttpStatus.OK).send(admin);

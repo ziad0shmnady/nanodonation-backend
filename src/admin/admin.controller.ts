@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -30,14 +31,19 @@ export class AdminController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SuperAdmin, Role.Owner)
   @Get('/getAllAdmins')
-  async getAllAdmins(@Req() req: Request, @Res() res: Response) {
-    return this.adminService.getAllAdmins(req, res);
+  async getAllAdmins(
+    @Query('filter_name') filter_name: string,
+    @Query('sort_type') sort_type: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.adminService.getAllAdmins(req, res, filter_name, sort_type);
   }
 
   //create new admin
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SuperAdmin, Role.Owner)
-  @UsePipes(ValidationPipe,ZodValidationEmail)
+  @UsePipes(ValidationPipe, ZodValidationEmail)
   @Post('/createAdmin')
   async createAdmin(
     @Req() req: Request,
@@ -49,11 +55,11 @@ export class AdminController {
 
   //update admin
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin, Role.Owner)
-  @UsePipes(ValidationPipe,ZodValidationEmail)
+  @Roles(Role.SuperAdmin, Role.Owner, Role.employee)
+  @UsePipes(ValidationPipe)
   @Put('/updateAdmin')
   async updateAdmin(
-    @Query('admin_id') admin_id: UUID,
+    @Query('admin_id') admin_id: String,
     @Req() req: Request,
     @Res() res: Response,
     @Body() updateAdminDto: updateAdminDto,
@@ -72,16 +78,15 @@ export class AdminController {
   ) {
     return this.adminService.deleteAdmin(req, res, admin_id);
   }
-
-  // get admin by name
+  // get admin by id
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SuperAdmin, Role.Owner)
-  @Get('/getAdminByName')
-  async getAdminByName(
-    @Query('name') name: string,
+  @Get('/getAdminById/:admin_id')
+  async getAdminById(
+    @Param('admin_id') admin_id: UUID,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    return this.adminService.getAdminByName(req, res, name);
+    return this.adminService.getAdminnById(req, res, admin_id);
   }
 }

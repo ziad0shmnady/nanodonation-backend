@@ -28,9 +28,25 @@ export class SuperAdminService {
     }
   }
 
-  async getAllSuperAdmins(req, res): Promise<SuperAdminDto> {
+  async getAllSuperAdmins(
+    req,
+    res,
+    filter_name,
+    sort_type,
+  ): Promise<SuperAdminDto> {
     try {
-      const admins = await this.prismaService.superAdmin.findMany();
+      const admins = await this.prismaService.superAdmin.findMany({
+        where: {
+          name: {
+            contains: filter_name,
+            mode: 'insensitive',
+          },
+        },
+        orderBy: {
+          created_at: sort_type,
+        },
+      });
+
       return res.status(HttpStatus.OK).send(admins);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -66,6 +82,20 @@ export class SuperAdminService {
         },
       });
       return res.status(HttpStatus.OK).send('admin deleted successfully');
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  //get current super admin
+  async getCurrentSuperAdmin(req, res): Promise<SuperAdminDto> {
+    try {
+      const admin = await this.prismaService.superAdmin.findUnique({
+        where: {
+          super_admin_id: req.user.userId,
+        },
+      });
+      return res.status(HttpStatus.OK).send(admin);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

@@ -14,7 +14,10 @@ import {
 import { z } from 'zod';
 import { UserService } from './user.service';
 import { Prisma } from '@prisma/client';
+import { UUID } from 'crypto';
 export class UserDTO {
+ @IsOptional()
+  @IsString()
   user_id?: string;
 
   @IsNotEmpty()
@@ -41,9 +44,17 @@ export class UserDTO {
   createdAt: Date;
 
   updatedAt: Date;
+ 
 }
 
 export class UpdateUserDto implements Prisma.UserUpdateInput {
+
+  
+  @IsOptional()
+  @IsString()
+  user_id?: string | Prisma.StringFieldUpdateOperationsInput;
+  @IsOptional()
+  @IsString()
   @IsOptional()
   @IsString()
   first_name?: string | Prisma.StringFieldUpdateOperationsInput;

@@ -26,8 +26,7 @@ import { Role } from 'src/roles/role.enum';
 export class OrgController {
   constructor(private orgService: OrgService) {}
 
-
-  //create org 
+  //create org
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SuperAdmin)
   @Post('/createOrg')
@@ -42,33 +41,27 @@ export class OrgController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SuperAdmin)
   @Get('/getAllOrg')
-  async getAllOrg(@Req() req: Request, @Res() res: Response) {
-    return this.orgService.getAllOrgs(req, res);
+  async getAllOrg(
+    @Query('filter_name') filter_name: String,
+    @Query('sort_type') sort_type: String,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.orgService.getAllOrgs(req, res, filter_name, sort_type);
   }
-  //chage org request status
+  //update org 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin)
+  @Roles(Role.SuperAdmin, Role.Owner)
   @Put('/updateOrg')
   async updateOrg(
+    @Query('org_id') org_id: string,
     @Body(ValidationPipe) updateOrgDto: UpdateOrgDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    return this.orgService.updateOrganization(req, res, updateOrgDto);
+    return this.orgService.updateOrganization(req, res, updateOrgDto, org_id);
   }
-  //chage org request status
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin)
-  //sort org by created at
-  @Get('/sortOrgByCreatedAt')
-  async sortOrgByCreatedAt(
-    @Query('sort_type') sort_type: string, //dsec or asc
-
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    return this.orgService.sortOrgReqByCreatedAt(req, res, sort_type);
-  }
+  
 
   //get org by id
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -82,17 +75,7 @@ export class OrgController {
     return this.orgService.getOrgById(req, res, id);
   }
 
-  //get org by name
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin)
-  @Get('/getOrgByName')
-  async getOrgByName(
-    @Query('name') name: string,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    return this.orgService.getOrgByName(req, res, name);
-  }
+  
   //delete org
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SuperAdmin)
@@ -103,5 +86,12 @@ export class OrgController {
     @Res() res: Response,
   ) {
     return this.orgService.deleteOrg(req, res, id);
+  }
+  // get current org
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles( Role.Owner,Role.employee)
+  @Get('/getCurrentOrg')
+  async getCurrentOrg(@Req() req: Request, @Res() res: Response) {
+    return this.orgService.getCurrentOrg(req, res);
   }
 }

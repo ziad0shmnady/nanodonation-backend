@@ -34,9 +34,21 @@ export class OrgService {
   }
 
   //get all orgs
-  async getAllOrgs(req, res): Promise<OrgDTO> {
+  async getAllOrgs(req, res,filter_name,sort_type): Promise<OrgDTO> {
     try {
-      const orgs = await this.prismService.organization.findMany();
+      const orgs = await this.prismService.organization.findMany(
+        {
+          where: {
+            name: {
+              contains: filter_name,
+              mode: 'insensitive',
+            },
+          },
+          orderBy: {
+            created_at: sort_type,
+          },
+        },
+      );
       //check if user returm empty array
       if (orgs.length === 0) {
         throw new HttpException('No users found', HttpStatus.NOT_FOUND);
@@ -47,10 +59,10 @@ export class OrgService {
     }
   }
   //update organization to add the rest of the attributes if it is in body
-  async updateOrganization(req, res, updateOrgDto): Promise<OrgDTO> {
+  async updateOrganization(req: any, res: any, updateOrgDto: any,org_id): Promise<OrgDTO> {
     try {
       //get org id from req.user
-      const { org_id } = await this.prismService.admin.findUnique({
+      const org = await this.prismService.admin.findUnique({
         where: {
           admin_id: req.user.userId,
         },
@@ -58,35 +70,27 @@ export class OrgService {
           org_id: true,
         },
       });
-
-      const org = await this.prismService.organization.update({
+      let orgId: any;
+      if (!org) {
+        orgId = org_id;
+      } else {
+        orgId = org.org_id;
+      }
+      const neworg = await this.prismService.organization.update({
         where: {
-          org_id: org_id,
+          org_id: orgId,
         },
         data: {
           ...updateOrgDto,
         },
       });
-      return res.status(HttpStatus.OK).send(org);
+      return res.status(HttpStatus.OK).send(neworg);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
-  // sort orgReq by created At
-
-  async sortOrgReqByCreatedAt(req, res, sort_type): Promise<OrgDTO> {
-    try {
-      const requests = await this.prismService.orgRequest.findMany({
-        orderBy: {
-          created_at: sort_type,
-        },
-      });
-      return res.status(HttpStatus.OK).send(requests);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
-  }
+ 
   //get org by id
   async getOrgById(req, res, id): Promise<OrgDTO> {
     try {
@@ -100,22 +104,7 @@ export class OrgService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  //get org by name
-  async getOrgByName(req, res, name): Promise<OrgDTO> {
-    try {
-      const org = await this.prismService.organization.findMany({
-        where: {
-          name: {
-            contains: name,
-            mode: 'insensitive',
-          },
-        },
-      });
-      return res.status(HttpStatus.OK).send(org);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
-  }
+ 
   //delete org
   async deleteOrg(req, res, id): Promise<OrgDTO> {
     try {
@@ -134,6 +123,28 @@ export class OrgService {
       return res
         .status(HttpStatus.OK)
         .send('org and admins who has this org deleted successfully');
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+  //get current org for admin
+  async getCurrentOrg(req, res): Promise<OrgDTO> {
+    try {
+      //get org id from req.user
+      const org = await this.prismService.admin.findUnique({
+        where: {
+          admin_id: req.user.userId,
+        },
+        select: {
+          org_id: true,
+        },
+      });
+      const currentOrg = await this.prismService.organization.findUnique({
+        where: {
+          org_id: org.org_id,
+        },
+      });
+      return res.status(HttpStatus.OK).send(currentOrg);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

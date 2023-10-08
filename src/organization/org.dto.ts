@@ -73,6 +73,10 @@ export class OrgDTO {
 
 
 export class UpdateOrgDto implements Prisma.OrganizationUpdateInput {
+  
+  @IsOptional()
+  @IsString()
+  org_id?: string | Prisma.StringFieldUpdateOperationsInput;
   @IsOptional()
   @IsString()
   name?: string | Prisma.StringFieldUpdateOperationsInput;

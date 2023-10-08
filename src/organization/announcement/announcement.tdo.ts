@@ -16,6 +16,16 @@ export class AnnouncementDto {
   @IsNotEmpty()
   @IsString()
   type: string;
+  @IsOptional()
+  @IsString()
+  org_id?: string;
+ 
+}
+
+export class getAnnouncementDto {
+  @IsNotEmpty()
+  @IsString()
+  org_id: string;
 }
 export class UpdateAnnouncementDto implements Prisma.AnnouncementUpdateInput {
   @IsOptional()
@@ -24,4 +34,7 @@ export class UpdateAnnouncementDto implements Prisma.AnnouncementUpdateInput {
   @IsOptional()
   @IsString()
   type?: string | Prisma.StringFieldUpdateOperationsInput;
+  @IsOptional()
+  @IsString()
+  org_id?: string;
 }

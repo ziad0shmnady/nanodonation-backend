@@ -49,8 +49,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SuperAdmin)
   @Get('/getAllUsers')
-  async getAllUsers(@Req() req: Request, @Res() res: Response) {
-    return this.userService.getAllUsers(req, res);
+  async getAllUsers(
+    @Query('filter_name') filter_name: String,
+    @Query('sort_type') sort_type: String,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.userService.getAllUsers(req, res, filter_name, sort_type);
   }
 
   // get user by id
@@ -67,14 +72,15 @@ export class UserController {
 
   // update user
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles(Role.User, Role.SuperAdmin)
   @Put('/updateUser')
   async updateUser(
+    @Query('user_id') user_Id: string,
     @Body(ValidationPipe) updateUserDto: UpdateUserDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    return this.userService.updateUser(req, res, updateUserDto);
+    return this.userService.updateUser( user_Id,req, res,updateUserDto);
   }
 
   // delete user by id
@@ -88,30 +94,11 @@ export class UserController {
   ) {
     return this.userService.deleteUser(req, res, id);
   }
-
-  //sort user by created at
-  @Get('/sortUserByCreatedAt')
+  // get current user
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin)
-  async sortUserByCreatedAt(
-
-    @Query('sort_type') sort_type: string, //dsec or asc
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    return this.userService.sortUsersByCreatedAt(req, res, sort_type);
-  }
-
-  //get user by name
-  @Get('/getUserByName')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  
-  @Roles(Role.SuperAdmin, Role.User)
-  async getUserByName(
-    @Query('name') name: string,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    return this.userService.getUserByName(req, res, name);
+  @Roles(Role.User)
+  @Get('/getCurrentUser')
+  async getCurrentUser(@Req() req: Request, @Res() res: Response) {
+    return this.userService.getCurrentUser(req, res);
   }
 }

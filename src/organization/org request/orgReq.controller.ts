@@ -45,8 +45,11 @@ export class OrgReqController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SuperAdmin)
   @Get('/getAllRequests')
-  async getAllOrgRequests(@Req() req: Request, @Res() res: Response) {
-    return this.orgReqService.getAllOrgRequests(req, res);
+  async getAllOrgRequests(
+  @Query('filter_name') filter_name: String
+    ,@Query('sort_type') sort_type: String,
+    @Req() req: Request, @Res() res: Response) {
+    return this.orgReqService.getAllOrgRequests(req, res,filter_name,sort_type);
   }
   // get org request by id
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -66,15 +69,15 @@ export class OrgReqController {
   ) {
     return this.orgReqService.getOrgRequestByName(req, res, query);
   }
-
-    // change org request status to approved
-    @Put('/approveRequest')
-    async approveOrgRequest(
-      @Body(ValidationPipe) approvedDTO: approvedDTO,
-      @Req() req: Request,
-      @Res() res: Response,
-    ) {
-      return this.orgReqService.approveOrgRequest(req, res);
-    }
-    
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SuperAdmin)
+  // change org request status to approved
+  @Put('/approveRequest')
+  async approveOrgRequest(
+    @Body(ValidationPipe) approvedDTO: approvedDTO,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.orgReqService.approveOrgRequest(req, res);
+  }
 }
