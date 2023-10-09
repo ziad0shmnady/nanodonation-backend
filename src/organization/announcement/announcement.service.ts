@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AnnouncementDto } from './announcement.tdo';
+import { AnnouncementDto ,UpdateAnnouncementDto} from './announcement.tdo';
 @Injectable()
 export class AnnouncementService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -43,6 +43,7 @@ export class AnnouncementService {
     req,
     res,
     getAnnouncementDto,
+    sort_type
   ): Promise<AnnouncementDto> {
     try {
       const org = await this.prismaService.admin.findUnique({
@@ -59,9 +60,54 @@ export class AnnouncementService {
         orgId = org.org_id;
       }
 
-      const announcement = await this.prismaService.announcement.findMany({
+      const announcement = await this.prismaService.announcement.findMany(
+
+        {
+          where: {
+            org_id: orgId,
+          },
+          orderBy: {
+            created_at: sort_type === 'asc' ? 'asc' : 'desc',
+          },
+        },
+      );
+      return res.status(HttpStatus.OK).send(announcement);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  //update announcement
+  async updateAnnouncement(
+    id,
+    req,
+    res,
+    UpdateAnnouncementDto,
+
+  ): Promise<UpdateAnnouncementDto> {
+    try {
+      
+
+      const announcement = await this.prismaService.announcement.update({
         where: {
-          org_id: orgId,
+          announcement_id: id,
+        },
+        data: {
+          ...UpdateAnnouncementDto,
+
+        },
+      });
+      return res.status(HttpStatus.OK).send(announcement);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+  //delete announcement
+  async deleteAnnouncement(id, req, res): Promise<AnnouncementDto> {
+    try {
+      const announcement = await this.prismaService.announcement.delete({
+        where: {
+          announcement_id: id,
         },
       });
       return res.status(HttpStatus.OK).send(announcement);
