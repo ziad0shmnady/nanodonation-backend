@@ -42,6 +42,11 @@ export class Donation_categoryService {
         orderBy: {
           created_at: sort_type,
         },
+        include: {
+          children: true,
+          donation_parent: true,
+          
+        }
       });
       return res.status(HttpStatus.OK).send(donation_category);
     } catch (error) {
