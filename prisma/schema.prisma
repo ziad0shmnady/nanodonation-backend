@@ -11,22 +11,23 @@ datasource db {
 }
 
 model User {
-  user_id    String   @id @default(uuid())
+  user_id    String     @id @default(uuid())
   first_name String
   last_name  String
-  email      String   @unique
+  email      String     @unique
   password   String
   DOB        String
+  phone      Json?
   donation   Donation[]
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
 }
 
 model Organization {
-  org_id                String         @id @default(uuid())
+  org_id                String              @id @default(uuid())
   name                  String
-  merchant_id           String         @unique
-  email                 String         @unique
+  merchant_id           String              @unique
+  email                 String              @unique
   phone                 String
   payment_processor     String
   company_registeration String
@@ -39,15 +40,16 @@ model Organization {
   linkedin              String?
   tiktok                String?
   // Remove the orgRequest field
-  orgRequest            OrgRequest?     @relation(fields: [request_id], references: [request_id])
-  request_id            String?         @unique
+  orgRequest            OrgRequest?         @relation(fields: [request_id], references: [request_id])
+  request_id            String?             @unique
   admin                 Admin[]
   announcement          Announcement[]
   donation              Donation[]
   donation_category     Donation_Category[]
+  kiosk                 Kiosk[]
 
-  created_at            DateTime       @default(now())
-  updated_at            DateTime       @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 // Define the OrgRequest model
@@ -85,6 +87,7 @@ model superAdmin {
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 }
+
 model Announcement {
   announcement_id String       @id @default(uuid())
   message         String
@@ -96,17 +99,17 @@ model Announcement {
 }
 
 model Donation {
-  donation_id String   @id @default(uuid())
-  amount      Float
+  donation_id    String  @id @default(uuid())
+  amount         Float
   transaction_id String?
-  transaction String?
+  transaction    String?
 
-  org          Organization? @relation(fields: [org_id], references: [org_id])
-  org_id       String?
-  user         User  ?       @relation(fields: [user_id], references: [user_id])
-  user_id      String?
-  created_at   DateTime     @default(now())
-  updated_at   DateTime     @updatedAt
+  org        Organization? @relation(fields: [org_id], references: [org_id])
+  org_id     String?
+  user       User?         @relation(fields: [user_id], references: [user_id])
+  user_id    String?
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
 }
 
 model Donation_Category {
@@ -114,12 +117,26 @@ model Donation_Category {
   name                 String
   description          String
   parent_id            String?
-  donation_parent      Donation_Category? @relation("donation_category_children", fields: [parent_id], references: [donation_category_id])
+  donation_parent      Donation_Category?  @relation("donation_category_children", fields: [parent_id], references: [donation_category_id])
   children             Donation_Category[] @relation("donation_category_children")
   org                  Organization?       @relation(fields: [org_id], references: [org_id])
   org_id               String?
   created_at           DateTime            @default(now())
   updated_at           DateTime            @updatedAt
+}
+
+model Kiosk {
+  kiosk_id   String       @id @default(uuid())
+  name       String?
+  username   String?   @unique
+  password   String?
+  location   String?
+  status     statusKiosk  @default(inactive)
+  ip_address String?
+  org        Organization @relation(fields: [org_id], references: [org_id])
+  org_id     String
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
 }
 
 enum Role {
@@ -131,4 +148,9 @@ enum Status {
   pending
   approved
   rejected
+}
+
+enum statusKiosk {
+  active
+  inactive
 }

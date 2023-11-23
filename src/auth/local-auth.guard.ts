@@ -10,3 +10,6 @@ export class AdminAuthGuard extends AuthGuard('admin') {
 export class SuperAdminAuthGuard extends AuthGuard('super-admin') {
     
 }
+export class kioskGuard extends AuthGuard('kiosk') {
+    
+}

@@ -2,6 +2,7 @@ import {
   IsBoolean,
   IsDate,
   IsEmail,
+  IsJSON,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -9,6 +10,7 @@ import {
   ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
+  isJSON,
 } from 'class-validator';
 
 import { z } from 'zod';
@@ -16,7 +18,7 @@ import { UserService } from './user.service';
 import { Prisma } from '@prisma/client';
 import { UUID } from 'crypto';
 export class UserDTO {
- @IsOptional()
+  @IsOptional()
   @IsString()
   user_id?: string;
 
@@ -40,16 +42,16 @@ export class UserDTO {
   @IsNotEmpty()
   //   @IsDate()
   DOB: Date;
+  @IsOptional()
+  @IsJSON()
+  phone: string;
 
   createdAt: Date;
 
   updatedAt: Date;
- 
 }
 
 export class UpdateUserDto implements Prisma.UserUpdateInput {
-
-  
   @IsOptional()
   @IsString()
   user_id?: string | Prisma.StringFieldUpdateOperationsInput;
@@ -68,4 +70,7 @@ export class UpdateUserDto implements Prisma.UserUpdateInput {
   @IsOptional()
   @IsString()
   DOB?: string | Prisma.StringFieldUpdateOperationsInput;
+  @IsOptional()
+  @IsJSON()
+  phone?: string | Prisma.StringFieldUpdateOperationsInput;
 }

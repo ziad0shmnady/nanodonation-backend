@@ -73,6 +73,23 @@ export class AuthService {
     return admin;
   }
 
+  async validateKiosk(
+    username: string,
+    password: string,
+  ): Promise<any | undefined> {
+    const kiosk = await this.prisma.kiosk.findUnique({
+      where: {
+        username: username,
+      },
+    });
+    if (!kiosk) {
+      throw new BadRequestException('Kiosk not found');
+    }
+    if (!(password === kiosk.password)) {
+      throw new BadRequestException('Invalid password');
+    }
+    return kiosk;
+  }
   async generateJwt(user, res) {
     const payload = {
       email: user.email,
@@ -84,6 +101,18 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     });
   }
+
+async generateKioskJwt(kiosk, res) {
+    const payload = {
+      username: kiosk.username,
+      sub: kiosk.kiosk_id,
+      Role: 'kiosk',
+    };
+
+    return res.json({
+      access_token: this.jwtService.sign(payload),
+    });
+}
 
   async generateAdminJwt(admin, res) {
     const adminn = await this.prisma.admin.findUnique({

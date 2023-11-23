@@ -40,12 +40,14 @@ export class Donation_categoryController {
     @Res() res: Response,
     @Query('name') name,
     @Query('sort_type') sort_type,
+    @Query('type') type,
   ) {
     return this.Donation_categoryService.getAllDonation_category(
       req,
       res,
       name,
       sort_type,
+      type,
     );
   }
   //get donation_category by id
@@ -81,4 +83,5 @@ export class Donation_categoryController {
   ) {
     return this.Donation_categoryService.deleteDonation_category(req, res, id);
   }
+  
 }

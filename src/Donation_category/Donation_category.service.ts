@@ -31,8 +31,24 @@ export class Donation_categoryService {
     res,
     name,
     sort_type,
+    type,
   ): Promise<createDonation_categoryDto> {
     try {
+      if (type === 'parent') {
+        const donation_category = await this.prisma.donation_Category.findMany({
+          where: {
+            parent_id: null,
+          },
+          orderBy: {
+            created_at: sort_type,
+          },
+          // get all expected children
+          include: {
+            children: false,
+          },
+        });
+        return res.status(HttpStatus.OK).send(donation_category);
+      }
       const donation_category = await this.prisma.donation_Category.findMany({
         where: {
           name: {
@@ -45,8 +61,7 @@ export class Donation_categoryService {
         include: {
           children: true,
           donation_parent: true,
-          
-        }
+        },
       });
       return res.status(HttpStatus.OK).send(donation_category);
     } catch (error) {
@@ -63,7 +78,11 @@ export class Donation_categoryService {
         where: {
           donation_category_id: id,
         },
+        include: {
+          children: true,
+        },
       });
+
       return res.status(HttpStatus.OK).send(donation_category);
     } catch (error) {
       throw new Error(error.message);
@@ -79,7 +98,6 @@ export class Donation_categoryService {
     updateDonation_categoryDto,
   ): Promise<updateDonation_categoryDto> {
     try {
-     
       const donation_category = await this.prisma.donation_Category.update({
         where: {
           donation_category_id: id,
