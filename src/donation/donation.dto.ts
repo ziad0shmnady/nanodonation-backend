@@ -30,6 +30,7 @@ export class CreateDonationDto implements Prisma.DonationCreateInput {
 
   @IsOptional()
   @IsString()
+  
   org_id?: string;
   @IsOptional()
   @IsString()

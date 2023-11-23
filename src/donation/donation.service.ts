@@ -29,13 +29,16 @@ export class DonationService {
     res,
     amount,
     sort_type,
+    kiosk_id,
   ): Promise<CreateDonationDto> {
     try {
+ 
       const donations = await this.prisma.donation.findMany({
         where: {
           amount: {
             gte: parseInt(amount) || 0, // "gte" stands for "greater than or equal to"
           },
+          kiosk_id: kiosk_id,
         },
         orderBy: {
           created_at: sort_type,
@@ -44,6 +47,7 @@ export class DonationService {
           user: {
             select: {
               first_name: true,
+              last_name: true,
               phone: true,
               email: true,
             },

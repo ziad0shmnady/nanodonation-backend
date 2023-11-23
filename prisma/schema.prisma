@@ -108,11 +108,13 @@ model Donation {
   status               statusDonation?    @default(pending)
   duration             String?
   category             Donation_Category? @relation(fields: [donation_category_id], references: [donation_category_id])
-  donation_category_id String?
+  donation_category_id String?           
   org                  Organization?      @relation(fields: [org_id], references: [org_id])
-  org_id               String?
+  org_id               String?      
   user                 User?              @relation(fields: [user_id], references: [user_id])
-  user_id              String?
+  user_id              String?          
+  kiosk                Kiosk?             @relation(fields: [kiosk_id], references: [kiosk_id])
+  kiosk_id             String?          
   created_at           DateTime           @default(now())
   updated_at           DateTime           @updatedAt
 }
@@ -142,6 +144,7 @@ model Kiosk {
   ip_address String?
   org        Organization @relation(fields: [org_id], references: [org_id])
   org_id     String
+  donation   Donation[]
   created_at DateTime     @default(now())
   updated_at DateTime     @updatedAt
 }

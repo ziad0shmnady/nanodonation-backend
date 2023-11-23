@@ -18,6 +18,7 @@ import { RolesGuard } from 'src/roles/role.guard';
 import { Roles } from 'src/roles/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Role } from 'src/roles/role.enum';
+import { UUID } from 'crypto';
 @Controller('donation')
 export class DonationController {
   constructor(private donationService: DonationService) {}
@@ -41,10 +42,11 @@ export class DonationController {
   async getAllDonations(
     @Query('amount') amount: String,
     @Query('sort_type') sort_type: String,
+    @Query('kiosk_id') kiosk_id: UUID,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    return this.donationService.getAllDonations(req, res, amount, sort_type);
+    return this.donationService.getAllDonations(req, res, amount, sort_type,kiosk_id);
   }
 
   //get donation by id

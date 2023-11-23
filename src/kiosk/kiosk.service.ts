@@ -32,7 +32,7 @@ export class KioskService {
   }
 
   // get all kiosks with filter and sort
-  async getAllKiosk(req, res, filter_name, sort_type) {
+  async getAllKiosk(req, res, filter_name, sort_type, org_id) {
     try {
       // check role of user from token
       const role = req.user.role;
@@ -45,6 +45,7 @@ export class KioskService {
             name: {
               contains: filter_name, // "gte" stands for "greater than or equal to"
             },
+            org_id: org_id,
           },
           orderBy: {
             created_at: sort_type,
@@ -80,6 +81,24 @@ export class KioskService {
       } else {
         throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
       }
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+  async updateKiosk(req, res, id, UpdateKioskDto) {
+    try {
+      const kiosk = await this.prismService.kiosk.update({
+        where: {
+          kiosk_id: id,
+        },
+        data: {
+          ...UpdateKioskDto,
+        },
+      });
+      return res.status(HttpStatus.OK).json({
+        message: 'Kiosk updated successfully',
+        data: kiosk,
+      });
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

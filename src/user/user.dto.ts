@@ -43,7 +43,6 @@ export class UserDTO {
   //   @IsDate()
   DOB: Date;
   @IsOptional()
-  @IsJSON()
   phone: string;
 
   createdAt: Date;
