@@ -1,5 +1,11 @@
-import { Prisma } from '@prisma/client';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { $Enums, Prisma } from '@prisma/client';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateDonationDto implements Prisma.DonationCreateInput {
   @IsOptional()
@@ -25,4 +31,15 @@ export class CreateDonationDto implements Prisma.DonationCreateInput {
   @IsOptional()
   @IsString()
   org_id?: string;
+  @IsOptional()
+  @IsString()
+  source?: string;
+  @IsOptional()
+  @IsEnum($Enums.statusDonation)
+  status?: $Enums.statusDonation;
+  @IsOptional()
+  duration?: string;
+  @IsOptional()
+  @IsEnum($Enums.typeDonation)
+  type?: $Enums.typeDonation;
 }

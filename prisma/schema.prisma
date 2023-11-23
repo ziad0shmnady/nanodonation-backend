@@ -99,17 +99,22 @@ model Announcement {
 }
 
 model Donation {
-  donation_id    String  @id @default(uuid())
-  amount         Float
-  transaction_id String?
-  transaction    String?
-
-  org        Organization? @relation(fields: [org_id], references: [org_id])
-  org_id     String?
-  user       User?         @relation(fields: [user_id], references: [user_id])
-  user_id    String?
-  created_at DateTime      @default(now())
-  updated_at DateTime      @updatedAt
+  donation_id          String             @id @default(uuid())
+  amount               Float
+  transaction_id       String?
+  transaction          String?
+  source               String?
+  type                 typeDonation?
+  status               statusDonation?    @default(pending)
+  duration             String?
+  category             Donation_Category? @relation(fields: [donation_category_id], references: [donation_category_id])
+  donation_category_id String?
+  org                  Organization?      @relation(fields: [org_id], references: [org_id])
+  org_id               String?
+  user                 User?              @relation(fields: [user_id], references: [user_id])
+  user_id              String?
+  created_at           DateTime           @default(now())
+  updated_at           DateTime           @updatedAt
 }
 
 model Donation_Category {
@@ -119,16 +124,18 @@ model Donation_Category {
   parent_id            String?
   donation_parent      Donation_Category?  @relation("donation_category_children", fields: [parent_id], references: [donation_category_id])
   children             Donation_Category[] @relation("donation_category_children")
-  org                  Organization?       @relation(fields: [org_id], references: [org_id])
-  org_id               String?
-  created_at           DateTime            @default(now())
-  updated_at           DateTime            @updatedAt
+  donation             Donation[]
+
+  org        Organization? @relation(fields: [org_id], references: [org_id])
+  org_id     String?
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
 }
 
 model Kiosk {
   kiosk_id   String       @id @default(uuid())
   name       String?
-  username   String?   @unique
+  username   String?      @unique
   password   String?
   location   String?
   status     statusKiosk  @default(inactive)
@@ -153,4 +160,15 @@ enum Status {
 enum statusKiosk {
   active
   inactive
+}
+
+enum statusDonation {
+  success
+  failed
+  pending
+}
+
+enum typeDonation {
+  one_time
+  recurring
 }

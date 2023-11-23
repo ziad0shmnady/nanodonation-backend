@@ -12,12 +12,16 @@ export class DonationService {
     res,
     createDonationDto: CreateDonationDto,
   ): Promise<CreateDonationDto> {
-    const donation = await this.prisma.donation.create({
-      data: {
-        ...createDonationDto,
-      },
-    });
-    return res.status(HttpStatus.OK).json(donation);
+    try {
+      const donation = await this.prisma.donation.create({
+        data: {
+          ...createDonationDto,
+        },
+      });
+      return res.status(HttpStatus.OK).json(donation);
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   async getAllDonations(
@@ -30,11 +34,31 @@ export class DonationService {
       const donations = await this.prisma.donation.findMany({
         where: {
           amount: {
-            gte: parseInt(amount) ||0, // "gte" stands for "greater than or equal to"
+            gte: parseInt(amount) || 0, // "gte" stands for "greater than or equal to"
           },
         },
         orderBy: {
           created_at: sort_type,
+        },
+        include: {
+          user: {
+            select: {
+              first_name: true,
+              phone: true,
+              email: true,
+            },
+          },
+          category: {
+            select: {
+              name: true,
+              //get name of parent category using parent_category_id
+              donation_parent: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         },
       });
       return res.status(HttpStatus.OK).send(donations);
