@@ -12,6 +12,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { DonationModule } from './donation/donation.module';
 import { Donation_categoryModule } from './Donation_category/Donation_category.module';
 import { MailModule } from './mail/mail.module';
+import { PaymentModule } from './paymentsHub/payment.module';
 @Module({
   imports: [
     ConfigModule.forRoot({}),
@@ -28,7 +29,8 @@ import { MailModule } from './mail/mail.module';
     SuperAdminModule,
     DonationModule,
     Donation_categoryModule,
-    MailModule
+    MailModule,
+    PaymentModule
   ],
   controllers: [AppController],
 

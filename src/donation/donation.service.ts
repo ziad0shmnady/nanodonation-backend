@@ -30,7 +30,7 @@ export class DonationService {
       const donations = await this.prisma.donation.findMany({
         where: {
           amount: {
-            gte: parseInt(amount), // "gte" stands for "greater than or equal to"
+            gte: parseInt(amount) ||0, // "gte" stands for "greater than or equal to"
           },
         },
         orderBy: {
