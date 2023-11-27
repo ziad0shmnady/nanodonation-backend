@@ -247,6 +247,7 @@ export class DonationService {
     const donationInfo = await this.prisma.donation.aggregate({
       where: {
         org_id: AdminInfo.org_id,
+        status: 'success',
         updated_at: filters,
       },
       _sum: {
