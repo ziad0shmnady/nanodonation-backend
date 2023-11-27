@@ -8,6 +8,7 @@ import {
   Get,
   Param,
   Put,
+  Delete,
 } from '@nestjs/common';
 import { Donation_categoryService } from './Donation_category.service';
 import { Request, Response } from 'express';
@@ -62,7 +63,7 @@ export class Donation_categoryController {
   //update donation_category
   @Put('/update')
   async updateDonation_category(
-    @Query('id') id,
+    @Param('id') id,
     @Req() req: Request,
     @Res() res: Response,
     @Body() updateDonation_categoryDto: updateDonation_categoryDto,
@@ -75,7 +76,7 @@ export class Donation_categoryController {
     );
   }
   //delete donation_category
-  @Get('/delete/:id')
+  @Delete('/delete/:id')
   async deleteDonation_category(
     @Req() req: Request,
     @Res() res: Response,

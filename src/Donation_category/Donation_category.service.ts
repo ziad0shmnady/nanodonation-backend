@@ -118,6 +118,7 @@ export class Donation_categoryService {
     id,
   ): Promise<createDonation_categoryDto> {
     try {
+   
       const donation_category = await this.prisma.donation_Category.delete({
         where: {
           donation_category_id: id,

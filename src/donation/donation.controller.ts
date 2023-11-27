@@ -71,4 +71,16 @@ export class DonationController {
   ) {
     return this.donationService.deleteDonation(req, res, id);
   }
+
+  //get statistics for donations 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Owner)
+  @Get('getStatistics')
+  async getStatistics(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('filter_by') filter_by: String,
+  ) {
+    return this.donationService.getDonationStatistics(req, res,filter_by);
+  }
 }
