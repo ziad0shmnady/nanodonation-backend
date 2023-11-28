@@ -1,5 +1,5 @@
-import { Prisma } from '@prisma/client';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { $Enums, Prisma } from '@prisma/client';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class createDonation_categoryDto {
   @IsString()
@@ -33,5 +33,8 @@ export class updateDonation_categoryDto
   @IsString()
   @IsOptional()
   org_id?: string | Prisma.StringFieldUpdateOperationsInput;
+  @IsEnum(['active', 'inactive'])
+  @IsOptional()
+  status?: $Enums.statusKiosk;
   updated_at: Date;
 }
