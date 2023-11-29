@@ -17,7 +17,7 @@ import { z } from 'zod';
 import { UserService } from './user.service';
 import { Prisma } from '@prisma/client';
 import { UUID } from 'crypto';
-export class UserDTO {
+export class UserDTO implements Prisma.UserCreateInput {
   @IsOptional()
   @IsString()
   user_id?: string;
@@ -41,10 +41,9 @@ export class UserDTO {
   password: string;
   @IsNotEmpty()
   //   @IsDate()
-  DOB: Date;
+  DOB: string;
   @IsOptional()
-  phone: string;
-
+  phone?:Prisma.PhoneCreateNestedOneWithoutUserInput;
   createdAt: Date;
 
   updatedAt: Date;
@@ -70,6 +69,5 @@ export class UpdateUserDto implements Prisma.UserUpdateInput {
   @IsString()
   DOB?: string | Prisma.StringFieldUpdateOperationsInput;
   @IsOptional()
-  @IsJSON()
-  phone?: string | Prisma.StringFieldUpdateOperationsInput;
+  phone:Prisma.PhoneCreateNestedOneWithoutUserInput;
 }

@@ -43,10 +43,26 @@ export class DonationController {
     @Query('amount') amount: String,
     @Query('sort_type') sort_type: String,
     @Query('kiosk_id') kiosk_id: UUID,
+    @Query('source') source: String,
+    @Query('type') type: String,
+    @Query('status') status: String,
+    @Query('country') country: JSON,
+    @Query('date') date: String,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    return this.donationService.getAllDonations(req, res, amount, sort_type,kiosk_id);
+    return this.donationService.getAllDonations(
+      req,
+      res,
+      amount,
+      sort_type,
+      kiosk_id,
+      source,
+      type,
+      status,
+      country,
+      date,
+    );
   }
 
   //get donation by id
@@ -72,7 +88,7 @@ export class DonationController {
     return this.donationService.deleteDonation(req, res, id);
   }
 
-  //get statistics for donations 
+  //get statistics for donations
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Owner, Role.SuperAdmin)
   @Get('getStatistics')
@@ -81,6 +97,6 @@ export class DonationController {
     @Res() res: Response,
     @Query('filter_by') filter_by: String,
   ) {
-    return this.donationService.getDonationStatistics(req, res,filter_by);
+    return this.donationService.getDonationStatistics(req, res, filter_by);
   }
 }

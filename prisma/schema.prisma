@@ -17,11 +17,23 @@ model User {
   email      String     @unique
   password   String
   DOB        String
-  phone      Json?
+  phone      Phone?
   donation   Donation[]
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
 }
+
+model Phone {
+  phone_id     String   @id @default(uuid())
+  country      String
+  country_code String
+  number       String
+  user         User     @relation(fields: [user_id], references: [user_id])
+  user_id      String   @unique
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
+
 
 model Organization {
   org_id                String              @id @default(uuid())

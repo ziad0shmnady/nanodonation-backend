@@ -37,11 +37,11 @@ export class UserController {
   //add validation pipe
   @UsePipes(ValidationPipe, ZodValidationEmail)
   async createUser(
-    @Body() userDTO: UserDTO, // Use a different variable name to avoid conflict with the class name
+    // @Body() userDTO: UserDTO, // Use a different variable name to avoid conflict with the class name
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    return this.userService.createUser(req, res, userDTO); // Pass userDTO instead of UserDTO
+    return this.userService.createUser(req, res); // Pass userDTO instead of UserDTO
   }
 
   // get all users

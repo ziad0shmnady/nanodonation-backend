@@ -32,10 +32,15 @@ export class DonationService {
     amount,
     sort_type,
     kiosk_id,
+    source,
+    type,
+    status,
+    country,
+    date,
   ): Promise<CreateDonationDto> {
     try {
       const role = req.user.role;
-    
+
       let org_id;
       if (role == 'owner') {
         org_id = await this.prisma.admin.findUnique({
@@ -53,6 +58,15 @@ export class DonationService {
             gte: parseInt(amount) || 0, // "gte" stands for "greater than or equal to"
           },
           kiosk_id: kiosk_id,
+          source: source,
+          type: type,
+          status: status,
+          user: {
+            phone: {
+              country: country,
+            },
+          },
+          created_at: date,
           org_id: org_id ? org_id.org_id : undefined,
         },
         orderBy: {
@@ -89,7 +103,7 @@ export class DonationService {
   async getDonationById(req, res, id): Promise<CreateDonationDto> {
     try {
       const role = req.user.role;
-    
+
       let org_id;
       if (role == 'owner') {
         org_id = await this.prisma.admin.findUnique({
@@ -132,7 +146,7 @@ export class DonationService {
       // get org id from user token
       const admin = req.user.userId;
       const role = req.user.role;
-    
+
       let AdminInfo;
       if (role == 'owner') {
         const AdminInfo = await this.prisma.admin.findUnique({
@@ -144,7 +158,7 @@ export class DonationService {
           },
         });
       }
-   
+
       const today = new Date();
       // For donations within the yesterday
       const yesterdayStartDate = new Date(today);
@@ -278,10 +292,9 @@ export class DonationService {
   }
 
   async filterDonationBydata(AdminInfo, filters) {
-
     const donationInfo = await this.prisma.donation.aggregate({
       where: {
-        org_id: AdminInfo? AdminInfo.org_id : undefined,
+        org_id: AdminInfo ? AdminInfo.org_id : undefined,
         status: 'success',
         updated_at: filters,
       },
@@ -300,7 +313,7 @@ export class DonationService {
     //get number of categories for this organization from donation_category table
     const numberOfCategories = await this.prisma.donation_Category.count({
       where: {
-        org_id: AdminInfo? AdminInfo.org_id : undefined,
+        org_id: AdminInfo ? AdminInfo.org_id : undefined,
         updated_at: filters,
       },
     });
