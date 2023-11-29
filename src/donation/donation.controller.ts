@@ -37,7 +37,7 @@ export class DonationController {
 
   //get all donations
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin)
+  @Roles(Role.SuperAdmin, Role.Owner)
   @Get('/getAll')
   async getAllDonations(
     @Query('amount') amount: String,
@@ -51,7 +51,7 @@ export class DonationController {
 
   //get donation by id
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin)
+  @Roles(Role.SuperAdmin, Role.Owner)
   @Get('getOneUnique/:id')
   async getDonationById(
     @Param('id') id: String,
@@ -62,7 +62,7 @@ export class DonationController {
   }
   //delete donation
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin)
+  @Roles(Role.SuperAdmin, Role.Owner)
   @Delete('delete/:id')
   async deleteDonation(
     @Param('id') id: String,
@@ -74,7 +74,7 @@ export class DonationController {
 
   //get statistics for donations 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Owner)
+  @Roles(Role.Owner, Role.SuperAdmin)
   @Get('getStatistics')
   async getStatistics(
     @Req() req: Request,
