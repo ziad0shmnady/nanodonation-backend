@@ -61,7 +61,7 @@ export class Donation_categoryController {
     return this.Donation_categoryService.getDonation_categoryById(req, res, id);
   }
   //update donation_category
-  @Put('/update')
+  @Put('/update/:id')
   async updateDonation_category(
     @Param('id') id,
     @Req() req: Request,
