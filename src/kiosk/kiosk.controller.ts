@@ -9,7 +9,8 @@ import {
   UseGuards,
   Put,
   UsePipes,
-  Param
+  Param,
+  ValidationPipe
 } from '@nestjs/common';
 import { KioskService } from './kiosk.service';
 import { KioskDTO } from './kiosk.dto';
@@ -29,6 +30,7 @@ export class KioskController {
   //add validation pipe
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SuperAdmin)
+  @UsePipes(ValidationPipe)
   async createKiosk(
     @Body() kioskDTO: KioskDTO, // Use a different variable name to avoid conflict with the class name
     @Req() req,
@@ -52,6 +54,7 @@ export class KioskController {
   //edite kiosk by id
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.SuperAdmin,Role.Owner,Role.kiosk)
+  @UsePipes(ValidationPipe)
   @Put('/update/:id')
   async updateKiosk(
     @Param('id') id: UUID,
@@ -60,6 +63,18 @@ export class KioskController {
     @Res() res,
   ){
     return this.kioskService.updateKiosk(req,res,id,UpdateKioskDto);
+  }
+  //get kiosk by id
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.SuperAdmin,Role.Owner,Role.kiosk)
+
+  @Get('/getById/:id')
+  async getKioskById(
+    @Req() req,
+    @Res() res,
+    @Param('id') id: UUID,
+  ) {
+    return this.kioskService.getKioskById(req, res, id);
   }
 
 }

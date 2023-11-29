@@ -103,4 +103,34 @@ export class KioskService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+  //get kiosk by id
+  async getKioskById(req, res, id) {
+    try {
+      // check if org for this kiosk is the same as org for user
+      const role = req.user.userId;
+      const org_id = await this.prismService.admin.findUnique({
+        where: {
+          admin_id: role,
+        },
+        select: {
+          org_id: true,
+        },
+      });
+
+      const kiosk = await this.prismService.kiosk.findUnique({
+        where: {
+          kiosk_id: id,
+        },
+      });
+      if (kiosk.org_id !== org_id.org_id) {
+        throw new HttpException('NOT_FOUND', HttpStatus.NOT_FOUND);
+      } else {
+        return res.status(HttpStatus.OK).json({
+          data: kiosk,
+        });
+      }
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

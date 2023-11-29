@@ -22,10 +22,10 @@ export class updateDonation_categoryDto
   implements Prisma.Donation_CategoryUpdateInput
 {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   name: string | Prisma.StringFieldUpdateOperationsInput;
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   description: string | Prisma.StringFieldUpdateOperationsInput;
   @IsString()
   @IsOptional()

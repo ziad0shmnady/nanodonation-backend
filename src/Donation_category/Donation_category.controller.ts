@@ -9,6 +9,8 @@ import {
   Param,
   Put,
   Delete,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { Donation_categoryService } from './Donation_category.service';
 import { Request, Response } from 'express';
@@ -16,6 +18,7 @@ import {
   createDonation_categoryDto,
   updateDonation_categoryDto,
 } from './Donation_category.dto';
+import { ValidationTypes } from 'class-validator';
 @Controller('Donation_category')
 export class Donation_categoryController {
   constructor(
@@ -23,6 +26,7 @@ export class Donation_categoryController {
   ) {}
 
   //create donation_category
+  @UsePipes(ValidationPipe)
   @Post('/create')
   async createDonation_category(
     @Req() req: Request,
@@ -61,6 +65,7 @@ export class Donation_categoryController {
     return this.Donation_categoryService.getDonation_categoryById(req, res, id);
   }
   //update donation_category
+  @UsePipes(ValidationPipe)
   @Put('/update/:id')
   async updateDonation_category(
     @Param('id') id,
