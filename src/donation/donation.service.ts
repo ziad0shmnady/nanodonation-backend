@@ -34,12 +34,26 @@ export class DonationService {
     kiosk_id,
   ): Promise<CreateDonationDto> {
     try {
+      const role = req.user.role;
+    
+      let org_id;
+      if (role == 'owner') {
+        org_id = await this.prisma.admin.findUnique({
+          where: {
+            admin_id: req.user.userId,
+          },
+          select: {
+            org_id: true,
+          },
+        });
+      }
       const donations = await this.prisma.donation.findMany({
         where: {
           amount: {
             gte: parseInt(amount) || 0, // "gte" stands for "greater than or equal to"
           },
           kiosk_id: kiosk_id,
+          org_id: org_id ? org_id.org_id : undefined,
         },
         orderBy: {
           created_at: sort_type,
@@ -74,9 +88,23 @@ export class DonationService {
 
   async getDonationById(req, res, id): Promise<CreateDonationDto> {
     try {
+      const role = req.user.role;
+    
+      let org_id;
+      if (role == 'owner') {
+        org_id = await this.prisma.admin.findUnique({
+          where: {
+            admin_id: req.user.userId,
+          },
+          select: {
+            org_id: true,
+          },
+        });
+      }
       const donation = await this.prisma.donation.findUnique({
         where: {
           donation_id: id,
+          org_id: org_id ? org_id.org_id : undefined,
         },
       });
       return res.status(HttpStatus.OK).send(donation);
@@ -103,14 +131,20 @@ export class DonationService {
     try {
       // get org id from user token
       const admin = req.user.userId;
-      const AdminInfo = await this.prisma.admin.findUnique({
-        where: {
-          admin_id: admin,
-        },
-        select: {
-          org_id: true,
-        },
-      });
+      const role = req.user.role;
+    
+      let AdminInfo;
+      if (role == 'owner') {
+        const AdminInfo = await this.prisma.admin.findUnique({
+          where: {
+            admin_id: admin,
+          },
+          select: {
+            org_id: true,
+          },
+        });
+      }
+   
       const today = new Date();
       // For donations within the yesterday
       const yesterdayStartDate = new Date(today);
@@ -244,9 +278,10 @@ export class DonationService {
   }
 
   async filterDonationBydata(AdminInfo, filters) {
+
     const donationInfo = await this.prisma.donation.aggregate({
       where: {
-        org_id: AdminInfo.org_id,
+        org_id: AdminInfo? AdminInfo.org_id : undefined,
         status: 'success',
         updated_at: filters,
       },
@@ -265,7 +300,7 @@ export class DonationService {
     //get number of categories for this organization from donation_category table
     const numberOfCategories = await this.prisma.donation_Category.count({
       where: {
-        org_id: AdminInfo.org_id,
+        org_id: AdminInfo? AdminInfo.org_id : undefined,
         updated_at: filters,
       },
     });
