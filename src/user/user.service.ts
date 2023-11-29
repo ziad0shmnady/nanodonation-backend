@@ -7,7 +7,7 @@ export class UserService {
   constructor(private prismService: PrismaService) {}
 
   // create a new user
-  async createUser(req, res, UserDTO): Promise<UserDTO> {
+  async createUser(req, res): Promise<UserDTO> {
     const salt = await bcrypt.genSalt();
     //check if user already exists
 
@@ -15,8 +15,19 @@ export class UserService {
 
     const user = await this.prismService.user.create({
       data: {
-        ...UserDTO,
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        email: req.body.email,
+        DOB: req.body.DOB,
         password: hashPassword,
+      },
+    });
+    const phone = await this.prismService.phone.create({
+      data: {
+        country: req.body.phone.country,
+        country_code: req.body.phone.country_code,
+        number: req.body.phone.number,
+        user_id: user.user_id,
       },
     });
     return res.status(HttpStatus.CREATED).send(user);
@@ -68,9 +79,8 @@ export class UserService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  async updateUser(user_Id,req, res, UpdateUserDto): Promise<UserDTO> {
+  async updateUser(user_Id, req, res, UpdateUserDto): Promise<UserDTO> {
     try {
-      
       //check if user exists
       const userExists = await this.prismService.user.findUnique({
         where: {
