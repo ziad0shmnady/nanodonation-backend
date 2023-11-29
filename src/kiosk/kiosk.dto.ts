@@ -27,18 +27,18 @@ export class KioskDTO {
 
 export class UpdateKioskDto implements Prisma.KioskUpdateInput {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   name?: string | Prisma.StringFieldUpdateOperationsInput;
   @IsString()
-  @IsNotEmpty()
+    @IsOptional()
   location?: string | Prisma.StringFieldUpdateOperationsInput;
   @IsString()
-  @IsNotEmpty()
+    @IsOptional()
   username?: string | Prisma.StringFieldUpdateOperationsInput;
   @IsString()
-  @IsNotEmpty()
+    @IsOptional()
   status?: $Enums.statusKiosk; // Update the type to statusKiosk
   @IsString()
-  @IsNotEmpty()
+    @IsOptional()
   ip_address?: string | Prisma.StringFieldUpdateOperationsInput;
 }
