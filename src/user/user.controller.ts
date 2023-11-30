@@ -73,14 +73,14 @@ export class UserController {
   // update user
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.User, Role.SuperAdmin)
-  @Put('/updateUser')
+  @Put('/updateUser/:id')
   async updateUser(
-    @Query('user_id') user_Id: string,
+    @Param('id')id: string,
     @Body(ValidationPipe) updateUserDto: UpdateUserDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    return this.userService.updateUser( user_Id,req, res,updateUserDto);
+    return this.userService.updateUser(id,req, res,updateUserDto);
   }
 
   // delete user by id

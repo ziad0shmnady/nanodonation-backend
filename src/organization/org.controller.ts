@@ -38,8 +38,8 @@ export class OrgController {
     return this.orgService.createOrg(req, res, createOrgDto);
   }
   //get all org
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(Role.SuperAdmin)
   @Get('/getAllOrg')
   async getAllOrg(
     @Query('filter_name') filter_name: String,
@@ -65,7 +65,7 @@ export class OrgController {
 
   //get org by id
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin)
+  // @Roles(Role.SuperAdmin)
   @Get('/getOrgById/:id')
   async getOrgById(
     @Param('id') id: string,

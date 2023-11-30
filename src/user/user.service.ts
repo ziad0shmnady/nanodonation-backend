@@ -79,7 +79,7 @@ export class UserService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  async updateUser(user_Id, req, res, UpdateUserDto): Promise<UserDTO> {
+  async updateUser(id, req, res, UpdateUserDto): Promise<UserDTO> {
     try {
       //check if user exists
       const userExists = await this.prismService.user.findUnique({
@@ -88,7 +88,7 @@ export class UserService {
         },
       });
       if (!userExists) {
-        var userId = user_Id;
+        var userId = id;
       } else {
         var userId = req.user.userId;
       }
