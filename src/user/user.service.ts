@@ -7,30 +7,48 @@ export class UserService {
   constructor(private prismService: PrismaService) {}
 
   // create a new user
-  async createUser(req, res): Promise<UserDTO> {
-    const salt = await bcrypt.genSalt();
-    //check if user already exists
+  async createUser(req, res, userDTO): Promise<UserDTO> {
+    try {
+      // Generate a salt for password hashing
+      const salt = await bcrypt.genSalt();
 
-    const hashPassword = await bcrypt.hash(req.body.password, salt);
+      // Check if the user already exists based on the email
+      const existingUser = await this.prismService.user.findUnique({
+        where: { email: req.body.email },
+      });
 
-    const user = await this.prismService.user.create({
-      data: {
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        email: req.body.email,
-        DOB: req.body.DOB,
-        password: hashPassword,
-      },
-    });
-    const phone = await this.prismService.phone.create({
-      data: {
-        country: req.body.phone.country,
-        country_code: req.body.phone.country_code,
-        number: req.body.phone.number,
-        user_id: user.user_id,
-      },
-    });
-    return res.status(HttpStatus.CREATED).send(user);
+      if (existingUser) {
+        return res
+          .status(HttpStatus.CONFLICT)
+          .send({ message: 'User with this email already exists' });
+      }
+
+      // Hash the password
+      const hashPassword = await bcrypt.hash(req.body.password, salt);
+
+      // Create user
+      const user = await this.prismService.user.create({
+        data: {
+          ...userDTO,
+          password: hashPassword,
+          phone: {
+            create: {
+              ...userDTO.phone,
+            },
+          },
+        },
+        include: {
+          phone: true, // Include the phone data in the response
+        },
+      });
+
+      return res.status(HttpStatus.CREATED).send(user);
+    } catch (error) {
+      console.error('Error creating user:', error);
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .send({ message: 'Error creating user' });
+    }
   }
 
   // get user by email
@@ -98,6 +116,11 @@ export class UserService {
         },
         data: {
           ...UpdateUserDto,
+          phone: {
+            update: {
+              ...UpdateUserDto.phone,
+            },
+          },
         },
       });
       return res.status(HttpStatus.OK).send(user);

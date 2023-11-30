@@ -34,13 +34,14 @@ model Phone {
   updated_at   DateTime @updatedAt
 }
 
-
 model Organization {
   org_id                String              @id @default(uuid())
   name                  String
   merchant_id           String              @unique
   email                 String              @unique
   phone                 String
+  category              String?
+  description           String?
   payment_processor     String
   company_registeration String
   logo                  String?
@@ -51,6 +52,7 @@ model Organization {
   twitter               String?
   linkedin              String?
   tiktok                String?
+  websiteLink           String?
   // Remove the orgRequest field
   orgRequest            OrgRequest?         @relation(fields: [request_id], references: [request_id])
   request_id            String?             @unique
@@ -79,11 +81,11 @@ model OrgRequest {
 }
 
 model Admin {
-  admin_id String @id @default(uuid())
-  name     String
-  email    String @unique
-  password String
-
+  admin_id   String       @id @default(uuid())
+  name       String
+  email      String       @unique
+  password   String
+  status     statusKiosk  @default(inactive)
   role       Role         @default(owner)
   org        Organization @relation(fields: [org_id], references: [org_id])
   org_id     String

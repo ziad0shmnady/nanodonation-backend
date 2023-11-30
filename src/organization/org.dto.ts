@@ -23,7 +23,12 @@ export class OrgDTO {
   @IsNotEmpty()
   @IsString()
   phone: string;
-
+  @IsOptional()
+  @IsString()
+  category
+  @IsOptional()
+  @IsString()
+  description
   @IsNotEmpty()
   @IsString()
   company_registeration: string;
@@ -67,6 +72,9 @@ export class OrgDTO {
   @IsOptional()
   @IsString()
   tiktok: string;
+  @IsOptional()
+  @IsString()
+  websiteLink
  
 }
 
@@ -108,6 +116,12 @@ export class UpdateOrgDto implements Prisma.OrganizationUpdateInput {
   facebook?: string | Prisma.NullableStringFieldUpdateOperationsInput;
   @IsOptional()
   @IsString()
+  category
+  @IsOptional()
+  @IsString()
+  description
+  @IsOptional()
+  @IsString()
   twitter?: string | Prisma.NullableStringFieldUpdateOperationsInput;
   @IsOptional()
   @IsString()
@@ -118,4 +132,7 @@ export class UpdateOrgDto implements Prisma.OrganizationUpdateInput {
   @IsOptional()
   @IsString()
   tiktok?: string | Prisma.NullableStringFieldUpdateOperationsInput;
+  @IsOptional()
+  @IsString()
+  websiteLink?: string | Prisma.NullableStringFieldUpdateOperationsInput;
 }

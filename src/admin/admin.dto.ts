@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { $Enums, Prisma } from '@prisma/client';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class adminDTO {
@@ -12,9 +12,10 @@ export class adminDTO {
   @IsNotEmpty()
   @IsString()
   password: string;
+
   @IsNotEmpty()
   @IsString()
-  role: Role;
+  role: $Enums.Role;
   @IsOptional()
   @IsString()
   org_id?: string;
@@ -33,11 +34,7 @@ export class updateAdminDto implements Prisma.AdminUpdateInput {
   password?: string | Prisma.StringFieldUpdateOperationsInput;
   @IsOptional()
   @IsString()
-  
-  role?: Prisma.EnumRoleFieldUpdateOperationsInput;
-}
-
-enum Role {
-  owner,
-  employee,
+  status?:
+    | Prisma.EnumstatusKioskFieldUpdateOperationsInput
+    | $Enums.statusKiosk;
 }

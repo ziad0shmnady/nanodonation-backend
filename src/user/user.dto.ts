@@ -43,7 +43,7 @@ export class UserDTO implements Prisma.UserCreateInput {
   //   @IsDate()
   DOB: string;
   @IsOptional()
-  phone?:Prisma.PhoneCreateNestedOneWithoutUserInput;
+  phone: Prisma.PhoneCreateNestedOneWithoutUserInput;
   createdAt: Date;
 
   updatedAt: Date;
