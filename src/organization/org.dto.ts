@@ -106,6 +106,7 @@ export class UpdateOrgDto implements Prisma.OrganizationUpdateInput {
   @IsOptional()
   @IsString()
   logo?: string;
+   @IsOptional()
   @IsString()
   primary_color?: string | Prisma.NullableStringFieldUpdateOperationsInput;
   @IsOptional()
