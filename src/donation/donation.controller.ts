@@ -37,7 +37,7 @@ export class DonationController {
 
   //get all donations
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin, Role.Owner)
+  @Roles(Role.SuperAdmin, Role.Owner, Role.User)
   @Get('/getAll')
   async getAllDonations(
     @Query('amount') amount: String,
