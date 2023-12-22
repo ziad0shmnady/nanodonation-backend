@@ -90,19 +90,21 @@ export class AuthService {
     }
     return kiosk;
   }
-  async generateJwt(user, res) {
+  async generateJwt(user,req ,res) {
+    const {rememberMe=false}= req.body;
     const payload = {
       email: user.email,
       sub: user.user_id,
       Role: 'User',
     };
-
+  
     return res.json({
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn:'365d' }),
     });
   }
 
-async generateKioskJwt(kiosk, res) {
+async generateKioskJwt(kiosk,req, res) {
+  const {rememberMe=false}= req.body;
     const payload = {
       username: kiosk.username,
       sub: kiosk.kiosk_id,
@@ -110,11 +112,12 @@ async generateKioskJwt(kiosk, res) {
     };
 
     return res.json({
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload ,{ expiresIn: rememberMe ? '30d' : '1d' }),
     });
 }
 
-  async generateAdminJwt(admin, res) {
+  async generateAdminJwt(admin, req,res) {
+    const {rememberMe=false}= req.body;
     const adminn = await this.prisma.admin.findUnique({
       where: {
         email: admin.email,
@@ -128,11 +131,12 @@ async generateKioskJwt(kiosk, res) {
     };
 
     return res.json({
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn: rememberMe ? '30d' : '1d' }),
     });
   }
 
-  async generateSuperAdminJwt(admin, res) {
+  async generateSuperAdminJwt(admin,  req,res) {
+    const {rememberMe=false}= req.body;
     const payload = {
       email: admin.email,
       sub: admin.super_admin_id,
@@ -141,7 +145,18 @@ async generateKioskJwt(kiosk, res) {
     };
 
     return res.json({
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn: rememberMe ? '30d' : '1d' }),
     });
+  }
+
+  // check if token is valid
+  async validateToken(userr): Promise<any> {
+    const decoded = this.jwtService.verify(userr);
+    console.log(decoded);
+    const user = await this.userService.getUserByEmail(decoded.email);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    return user;
   }
 }
