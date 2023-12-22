@@ -95,4 +95,27 @@ export class SuperAdminController {
     );
     return superAdmin;
   }
+
+    // forgot password
+    @Post('forgotPassword')
+    async forgotPassword(@Req() req: Request, @Res() res: Response) {
+      return this.superAdminService.forgotPassword(req, res);
+    }
+    // verify token
+    @Post('verifyToken')
+    async verifyToken(@Req() req: Request, @Res() res: Response) {
+      return this.superAdminService.verifyToken(req, res);
+    }
+    // reset password
+    @Put('resetPassword')
+    async resetPassword(@Req() req: Request, @Res() res: Response) {
+      return this.superAdminService.resetPassword(req, res);
+    }
+    //change Password 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.SuperAdmin)
+    @Put('changePassword')
+    async changePassword(@Req() req: Request, @Res() res: Response) {
+      return this.superAdminService.changePassword(req, res);
+    }
 }

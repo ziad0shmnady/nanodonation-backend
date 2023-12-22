@@ -162,7 +162,13 @@ model Kiosk {
   created_at DateTime     @default(now())
   updated_at DateTime     @updatedAt
 }
-
+model Token {
+  otp_id    String   @id @default(uuid())
+  otp       String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 enum Role {
   owner
   employee

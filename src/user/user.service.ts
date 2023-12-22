@@ -1,10 +1,20 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import * as nodemailer from 'nodemailer';
 import { UserDTO } from './user.dto';
 @Injectable()
 export class UserService {
-  constructor(private prismService: PrismaService) {}
+  private transporter;
+  constructor(private prismService: PrismaService) {
+    this.transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: 'zeiadmohamed331@gmail.com',
+        pass: 'olor uuud bkov zhna',
+      },
+    });
+  }
 
   // create a new user
   async createUser(req, res, userDTO): Promise<UserDTO> {
@@ -157,6 +167,152 @@ export class UserService {
         },
       });
       return res.status(HttpStatus.OK).send(user);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+  async forgotPassword(req, res): Promise<UserDTO> {
+    try {
+      const { email } = req.body;
+      const user = await this.prismService.user.findUnique({
+        where: {
+          email: email,
+        },
+      });
+      if (!user) {
+        return res.status(HttpStatus.NOT_FOUND).send('User not found');
+      }
+      const OTP = Math.floor(100000 + Math.random() * 900000).toString();
+      //check if email already exists into token table
+      const token = await this.prismService.token.findFirst({
+        where: {
+          email: email,
+        },
+      });
+      if (token) {
+        //delete otp from db
+        await this.prismService.token.delete({
+          where: {
+            email: email,
+          },
+        });
+      }
+      await this.prismService.token.create({
+        data: {
+          email: email,
+          otp: OTP,
+        },
+      });
+      const mailOptions = {
+        from: 'zeiadmohamed@gmail.com',
+        to: email,
+        subject: 'Reset Password',
+        text: `Your OTP is ${OTP}`,
+      };
+
+      const info = await this.transporter.sendMail(mailOptions);
+      return res.status(HttpStatus.OK).send('Email sent: ' + info.response);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async verifyToken(req, res): Promise<any> {
+    try {
+      const { OTP, email } = req.body;
+    //get token from db
+    const OTPDB = await this.prismService.token.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    var verify = false;
+    if (OTP == OTPDB.otp) {
+      verify = true;
+    }
+    //update user stepper to stripe
+
+    if (verify) {
+      return res
+        .status(HttpStatus.ACCEPTED)
+        .send({ message: 'OTP verified successfully' });
+    } else {
+      throw new HttpException('OTP is invalid', HttpStatus.BAD_REQUEST);
+    }
+
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      
+
+    }
+  }
+
+  async resetPassword(req,res): Promise<any> {
+    try {
+      const { password, email } = req.body;
+      //check if email is valid
+      const OTPDB = await this.prismService.token.findUnique({
+        where: {
+          email: email,
+        },
+      });
+      if (!OTPDB) {
+        throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
+      }
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(password, salt);
+      var verify = false;
+
+      // update the user as verified
+      await this.prismService.user.update({
+        where: {
+          email: email,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+
+      //delete otp from db
+      await this.prismService.token.delete({
+        where: {
+          email: email,
+        },
+      });
+      return res.status(HttpStatus.ACCEPTED).send ({ message: 'Password reset successfully' });
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+ async changePassword(req, res): Promise<UserDTO> {
+    try {
+      const {currentPassword, newPassword} = req.body;
+      //check if current password is correct
+      const user = await this.prismService.user.findUnique({
+        where: {
+          user_id: req.user.userId,
+        },
+      });
+      const validPassword = bcrypt.compareSync(
+        currentPassword,
+        user.password,
+      );
+      if (!validPassword) {
+        throw new HttpException('Invalid current password', HttpStatus.BAD_REQUEST);
+      }
+      //hash the new password
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync(newPassword, salt);
+      const updateuser =await this.prismService.user.update({
+        where: {
+          user_id: req.user.userId,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+      return res.status(HttpStatus.OK).send("Password changed successfully");
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

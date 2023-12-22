@@ -101,4 +101,26 @@ export class UserController {
   async getCurrentUser(@Req() req: Request, @Res() res: Response) {
     return this.userService.getCurrentUser(req, res);
   }
+  // forgot password
+  @Post('forgotPassword')
+  async forgotPassword(@Req() req: Request, @Res() res: Response) {
+    return this.userService.forgotPassword(req, res);
+  }
+  // verify token
+  @Post('verifyToken')
+  async verifyToken(@Req() req: Request, @Res() res: Response) {
+    return this.userService.verifyToken(req, res);
+  }
+  // reset password
+  @Put('resetPassword')
+  async resetPassword(@Req() req: Request, @Res() res: Response) {
+    return this.userService.resetPassword(req, res);
+  }
+  //change Password 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.User)
+  @Put('changePassword')
+  async changePassword(@Req() req: Request, @Res() res: Response) {
+    return this.userService.changePassword(req, res);
+  }
 }

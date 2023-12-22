@@ -89,4 +89,27 @@ export class AdminController {
   ) {
     return this.adminService.getAdminnById(req, res, admin_id);
   }
+
+    // forgot password
+    @Post('forgotPassword')
+    async forgotPassword(@Req() req: Request, @Res() res: Response) {
+      return this.adminService.forgotPassword(req, res);
+    }
+    // verify token
+    @Post('verifyToken')
+    async verifyToken(@Req() req: Request, @Res() res: Response) {
+      return this.adminService.verifyToken(req, res);
+    }
+    // reset password
+    @Put('resetPassword')
+    async resetPassword(@Req() req: Request, @Res() res: Response) {
+      return this.adminService.resetPassword(req, res);
+    }
+    //change Password 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.Owner, Role.employee)
+    @Put('changePassword')
+    async changePassword(@Req() req: Request, @Res() res: Response) {
+      return this.adminService.changePassword(req, res);
+    }
 }
