@@ -5,9 +5,5 @@ import { PaymentService } from './payment.service';
 export class PaymentController {
     constructor(private readonly paymentService: PaymentService) {}
 
-  @Post('initialize')
-  async initializeSdk(@Body() payload: { mid: string; gatewayPublicKey: string }) {
-    return this.paymentService.initializeSdk(payload.mid, payload.gatewayPublicKey);
-  }
-
+ 
 }

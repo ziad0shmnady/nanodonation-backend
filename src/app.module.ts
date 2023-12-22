@@ -12,7 +12,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { DonationModule } from './donation/donation.module';
 import { Donation_categoryModule } from './Donation_category/Donation_category.module';
 import { MailModule } from './mail/mail.module';
-import { PaymentModule } from './paymentsHub/payment.module';
+import { PaymentModule } from './payments/payment.module';
 import { KioskModule } from './kiosk/kiosk.module';
 @Module({
   imports: [

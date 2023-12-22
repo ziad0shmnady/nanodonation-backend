@@ -116,7 +116,6 @@ model Donation {
   donation_id          String             @id @default(uuid())
   amount               Float
   transaction_id       String?
-  transaction          String?
   source               String?
   type                 typeDonation?
   status               statusDonation?    @default(pending)
