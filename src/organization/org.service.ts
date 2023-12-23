@@ -10,6 +10,44 @@ export class OrgService {
 
   async createOrg(req, res, createOrgDto): Promise<OrgDTO> {
     try {
+      //check if org with this email already exists
+      const existingOrg = await this.prismService.organization.findUnique({
+        where: {
+          email: createOrgDto.email,
+        },
+      });
+      if (existingOrg) {
+        return res
+          .status(HttpStatus.CONFLICT)
+          .send({ message: 'Org with this email already exists' });
+      }
+      // check if org with this merchant_id already exists
+      const existingOrgMerchantId = await this.prismService.organization.findUnique(
+        {
+          where: {
+            merchant_id: createOrgDto.merchant_id,
+          },
+        },
+      );
+      if (existingOrgMerchantId) {
+        return res
+          .status(HttpStatus.CONFLICT)
+          .send({ message: 'Org with this merchant_id already exists' });
+      }
+      // check if org with this request_id already exists
+      const existingOrgRequestId = await this.prismService.organization.findUnique(
+        {
+          where: {
+            request_id: createOrgDto.request_id,
+          },
+        },
+      );
+      if (existingOrgRequestId) {
+        return res
+          .status(HttpStatus.CONFLICT)
+          .send({ message: 'Org with this request_id already exists' });
+      }
+
       //create org
       const org = await this.prismService.organization.create({
         data: {

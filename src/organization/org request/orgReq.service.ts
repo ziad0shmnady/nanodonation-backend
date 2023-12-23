@@ -9,6 +9,17 @@ export class OrgReqService {
   constructor(private prismService: PrismaService) {}
   async createOrgRequest(req, res, reqDTO): Promise<ReqDTO> {
     try {
+      //check if org request with this email already exists
+      const existingOrgRequest = await this.prismService.orgRequest.findUnique({
+        where: {
+          email: reqDTO.email,
+        },
+      });
+      if (existingOrgRequest) {
+        return res
+          .status(HttpStatus.CONFLICT)
+          .send({ message: 'Org request with this email already exists' });
+      }
       const request = await this.prismService.orgRequest.create({
         data: {
           ...reqDTO,

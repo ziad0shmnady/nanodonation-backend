@@ -17,7 +17,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req, @Res() res): Promise<any> {
-    return this.authService.generateJwt(req.user,req, res);
+    return this.authService.generateJwt(req.user, res);
   }
 
   @UseGuards(JwtAuthGuard)

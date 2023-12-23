@@ -90,8 +90,8 @@ export class AuthService {
     }
     return kiosk;
   }
-  async generateJwt(user,req ,res) {
-    const {rememberMe=false}= req.body;
+  async generateJwt(user,res) {
+
     const payload = {
       email: user.email,
       sub: user.user_id,

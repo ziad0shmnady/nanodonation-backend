@@ -70,6 +70,16 @@ export class AdminService {
   async createAdmin(req, res, adminDTO): Promise<adminDTO> {
     const salt = await bcrypt.genSalt();
     //check if user already exists
+    const existingAdmin = await this.prisma.admin.findUnique({
+      where: {
+        email: adminDTO.email,
+      },
+    });
+    if (existingAdmin) {
+      return res
+        .status(HttpStatus.CONFLICT)
+        .send({ message: 'Admin with this email already exists' });
+    }
 
     //get org id from admin
     const org = await this.prisma.admin.findUnique({

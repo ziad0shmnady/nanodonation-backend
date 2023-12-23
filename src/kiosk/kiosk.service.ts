@@ -14,6 +14,15 @@ export class KioskService {
       // outomatically generate username and password
       const username = name + '@kiosk.com';
       const password = Math.random().toString(36).slice(-8);
+      //check if kiosk with this username already exists
+      const existingKiosk = await this.prismService.kiosk.findUnique({
+        where: { username: username },
+      });
+      if (existingKiosk) {
+        return res
+          .status(HttpStatus.CONFLICT)
+          .send({ message: 'Kiosk with this name already exists' });
+      }
       const kiosk = await this.prismService.kiosk.create({
         data: {
           name,

@@ -28,6 +28,19 @@ export class SuperAdminService {
 
   async createSuperAdmin(superAdminDto, req, res): Promise<SuperAdminDto> {
     try {
+      //check if superAdmin with this email already exists
+      const existingSuperAdmin = await this.prismaService.superAdmin.findUnique(
+        {
+          where: {
+            email: superAdminDto.email,
+          },
+        },
+      );
+      if (existingSuperAdmin) {
+        return res
+          .status(HttpStatus.CONFLICT)
+          .send({ message: 'SuperAdmin with this email already exists' });
+      }
       const admin = await this.prismaService.superAdmin.create({
         data: {
           ...superAdminDto,
@@ -161,35 +174,32 @@ export class SuperAdminService {
   async verifyToken(req, res): Promise<any> {
     try {
       const { OTP, email } = req.body;
-    //get token from db
-    const OTPDB = await this.prismaService.token.findUnique({
-      where: {
-        email: email,
-      },
-    });
+      //get token from db
+      const OTPDB = await this.prismaService.token.findUnique({
+        where: {
+          email: email,
+        },
+      });
 
-    var verify = false;
-    if (OTP == OTPDB.otp) {
-      verify = true;
-    }
-    //update superAdmin stepper to stripe
+      var verify = false;
+      if (OTP == OTPDB.otp) {
+        verify = true;
+      }
+      //update superAdmin stepper to stripe
 
-    if (verify) {
-      return res
-        .status(HttpStatus.ACCEPTED)
-        .send({ message: 'OTP verified successfully' });
-    } else {
-      throw new HttpException('OTP is invalid', HttpStatus.BAD_REQUEST);
-    }
-
+      if (verify) {
+        return res
+          .status(HttpStatus.ACCEPTED)
+          .send({ message: 'OTP verified successfully' });
+      } else {
+        throw new HttpException('OTP is invalid', HttpStatus.BAD_REQUEST);
+      }
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      
-
     }
   }
 
-  async resetPassword(req,res): Promise<any> {
+  async resetPassword(req, res): Promise<any> {
     try {
       const { password, email } = req.body;
       //check if email is valid
@@ -221,14 +231,16 @@ export class SuperAdminService {
           email: email,
         },
       });
-      return res.status(HttpStatus.ACCEPTED).send ({ message: 'Password reset successfully' });
+      return res
+        .status(HttpStatus.ACCEPTED)
+        .send({ message: 'Password reset successfully' });
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
- async changePassword(req, res): Promise<SuperAdminDto> {
+  async changePassword(req, res): Promise<SuperAdminDto> {
     try {
-      const {currentPassword, newPassword} = req.body;
+      const { currentPassword, newPassword } = req.body;
       //check if current password is correct
       const superAdmin = await this.prismaService.superAdmin.findUnique({
         where: {
@@ -240,12 +252,15 @@ export class SuperAdminService {
         superAdmin.password,
       );
       if (!validPassword) {
-        throw new HttpException('Invalid current password', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Invalid current password',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       //hash the new password
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(newPassword, salt);
-      const updatesuperAdmin =await this.prismaService.superAdmin.update({
+      const updatesuperAdmin = await this.prismaService.superAdmin.update({
         where: {
           super_admin_id: req.user.userId,
         },
@@ -253,7 +268,7 @@ export class SuperAdminService {
           password: hashedPassword,
         },
       });
-      return res.status(HttpStatus.OK).send("Password changed successfully");
+      return res.status(HttpStatus.OK).send('Password changed successfully');
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
