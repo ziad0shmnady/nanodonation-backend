@@ -64,7 +64,7 @@ export class OrgController {
   
 
   //get org by id
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
   // @Roles(Role.SuperAdmin)
   @Get('/getOrgById/:id')
   async getOrgById(

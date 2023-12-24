@@ -132,6 +132,17 @@ export class OrgService {
   //get org by id
   async getOrgById(req, res, id): Promise<OrgDTO> {
     try {
+      //check if org with this id exists
+      const existingOrg = await this.prismService.organization.findUnique({
+        where: {
+          org_id: id,
+        },
+      });
+      if (!existingOrg) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .send({ message: 'Org with this id does not exist' });
+      }
       const org = await this.prismService.organization.findUnique({
         where: {
           org_id: id,
