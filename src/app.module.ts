@@ -14,6 +14,7 @@ import { Donation_categoryModule } from './Donation_category/Donation_category.m
 import { MailModule } from './mail/mail.module';
 import { PaymentModule } from './payments/payment.module';
 import { KioskModule } from './kiosk/kiosk.module';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     ConfigModule.forRoot({}),
@@ -23,6 +24,7 @@ import { KioskModule } from './kiosk/kiosk.module';
         limit: 2,
       },
     ]),
+    ScheduleModule.forRoot(),
     OrgModule,
     UserModule,
     AuthModule,

@@ -4,9 +4,13 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as passwordGenerator from 'password-generator';
 import { randomUUID } from 'crypto';
 import { OrgDTO } from './org.dto';
+import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 @Injectable()
 export class OrgService {
-  constructor(private prismService: PrismaService) {}
+  constructor(
+    private prismService: PrismaService,
+    private schedulerRegistry: SchedulerRegistry,
+  ) {}
 
   async createOrg(req, res, createOrgDto): Promise<OrgDTO> {
     try {
@@ -22,26 +26,24 @@ export class OrgService {
           .send({ message: 'Org with this email already exists' });
       }
       // check if org with this merchant_id already exists
-      const existingOrgMerchantId = await this.prismService.organization.findUnique(
-        {
+      const existingOrgMerchantId =
+        await this.prismService.organization.findUnique({
           where: {
             merchant_id: createOrgDto.merchant_id,
           },
-        },
-      );
+        });
       if (existingOrgMerchantId) {
         return res
           .status(HttpStatus.CONFLICT)
           .send({ message: 'Org with this merchant_id already exists' });
       }
       // check if org with this request_id already exists
-      const existingOrgRequestId = await this.prismService.organization.findUnique(
-        {
+      const existingOrgRequestId =
+        await this.prismService.organization.findUnique({
           where: {
             request_id: createOrgDto.request_id,
           },
-        },
-      );
+        });
       if (existingOrgRequestId) {
         return res
           .status(HttpStatus.CONFLICT)
@@ -71,22 +73,29 @@ export class OrgService {
     }
   }
 
+  // cron job to every 10 second
+  // @Cron('*/10 * * * * *', { name: 'notifications' })
+  // async testCronJob() {
+  //   console.log('cron job is running');
+  //   const job = this.schedulerRegistry.getCronJob('notifications');
+
+  //   job.stop();
+  //   console.log(job.lastDate());
+  // }
   //get all orgs
-  async getAllOrgs(req, res,filter_name,sort_type): Promise<OrgDTO> {
+  async getAllOrgs(req, res, filter_name, sort_type): Promise<OrgDTO> {
     try {
-      const orgs = await this.prismService.organization.findMany(
-        {
-          where: {
-            name: {
-              contains: filter_name,
-              mode: 'insensitive',
-            },
-          },
-          orderBy: {
-            created_at: sort_type,
+      const orgs = await this.prismService.organization.findMany({
+        where: {
+          name: {
+            contains: filter_name,
+            mode: 'insensitive',
           },
         },
-      );
+        orderBy: {
+          created_at: sort_type,
+        },
+      });
       //check if user returm empty array
       if (orgs.length === 0) {
         throw new HttpException('No users found', HttpStatus.NOT_FOUND);
@@ -97,7 +106,12 @@ export class OrgService {
     }
   }
   //update organization to add the rest of the attributes if it is in body
-  async updateOrganization(req: any, res: any, updateOrgDto: any,org_id): Promise<OrgDTO> {
+  async updateOrganization(
+    req: any,
+    res: any,
+    updateOrgDto: any,
+    org_id,
+  ): Promise<OrgDTO> {
     try {
       //get org id from req.user
       const org = await this.prismService.admin.findUnique({
@@ -128,7 +142,6 @@ export class OrgService {
     }
   }
 
- 
   //get org by id
   async getOrgById(req, res, id): Promise<OrgDTO> {
     try {
@@ -153,7 +166,7 @@ export class OrgService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
- 
+
   //delete org
   async deleteOrg(req, res, id): Promise<OrgDTO> {
     try {

@@ -18,4 +18,11 @@ export class CardPointeController {
   ) {
     return await this.CardPointeService.donate(req,res);
   }
+  @Post('publicDonate')
+  async publicDonate(
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return await this.CardPointeService.donate(req,res);
+  }
 }

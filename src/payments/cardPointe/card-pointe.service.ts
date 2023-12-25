@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import axios from 'axios';
+import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 @Injectable()
 export class CardPointeService {
   cardpointeapi = axios.create({
@@ -11,8 +12,17 @@ export class CardPointeService {
       password: process.env.CARDPOINTE_PASS,
     },
   });
-  constructor(private prismService: PrismaService) {}
+  constructor(private prismService: PrismaService,
+    private schedulerRegistry: SchedulerRegistry,) {}
+  // cron job to every 10 second
+  // @Cron('*/10 * * * * *', { name: 'notifications' })
+  // async testCronJob() {
+  //   console.log('cron job is running');
+  //   const job = this.schedulerRegistry.getCronJob('notifications');
 
+  //   job.stop();
+  //   console.log(job.lastDate());
+  // }
   async donate(req, res) {
     try {
       const {
