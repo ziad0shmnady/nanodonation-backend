@@ -46,7 +46,7 @@ export class CardPointeService {
       const data = {
         merchid: process.env.MERCHID,
         account: token,
-        amount: amount,
+        amount: amount * 100,
         expiry: expiry,
         cvv2: cvv,
         orderid: donation.donation_id,
