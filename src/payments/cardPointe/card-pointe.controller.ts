@@ -10,7 +10,6 @@ export class CardPointeController {
   constructor(private CardPointeService: CardPointeService) {}
   // donate endpoint
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.User)
   @Post('donate')
   async donate(
     @Req() req: Request,
