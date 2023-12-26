@@ -38,7 +38,6 @@ export class CardPointeService {
           duration: `${frquency} ${duration}s`,
           donation_category_id: donation_category_id,
           org_id: org_id,
-          user_id: req.user.userId,
           kiosk_id: kiosk_id || null,
         },
       });
