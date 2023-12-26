@@ -32,10 +32,10 @@ export class CardPointeService {
       //add data from the request to object
       const data = {
         merchid: process.env.MERCHID,
-        account: token,
-        amount: amount * 100,
-        expiry: expiry,
-        cvv2: cvv,
+        account: body.token,
+        amount: body.amount * 100,
+        expiry: body.expiry,
+        cvv2: body.cvv,
         orderid: donation.donation_id,
       };
 
