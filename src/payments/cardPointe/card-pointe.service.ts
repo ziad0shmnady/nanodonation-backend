@@ -15,30 +15,18 @@ export class CardPointeService {
 
   async donate(req, res) {
     try {
-      const {
-        amount,
-        source,
-        type,
-        duration,
-        frquency,
-        donation_category_id,
-        org_id,
-        kiosk_id,
-        token,
-        expiry,
-        cvv
-      } = req.body;
+      const body = req.body;
       // add data from the request to donation database
       const donation = await this.prismService.donation.create({
         data: {
-          amount: amount,
+          amount: body.amount,
           status: 'pending',
-          source: source,
-          type: type,
-          duration: `${frquency} ${duration}s`,
-          donation_category_id: donation_category_id,
-          org_id: org_id,
-          kiosk_id: kiosk_id || null,
+          source: body.source,
+          type: body.type,
+          ...( body.type === "recurring" && {duration: `${body.frquency} ${body.duration}s`}),
+          donation_category_id: body.donation_category_id,
+          org_id: body.org_id,
+          kiosk_id: body.kiosk_id || null,
         },
       });
       //add data from the request to object
@@ -65,7 +53,7 @@ export class CardPointeService {
         },
       });
 
-      return res.status(200).send({ status: paymentRes.data.respstat });
+      return res.status(200).send(paymentRes.data);
     } catch (error) {
       console.log(error)
       return res
