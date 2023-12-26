@@ -31,7 +31,7 @@ export class CardPointeService {
       // add data from the request to donation database
       const donation = await this.prismService.donation.create({
         data: {
-          amount: parseFloat(amount),
+          amount: amount,
           status: 'pending',
           source: source,
           type: type,
@@ -68,6 +68,7 @@ export class CardPointeService {
 
       return res.status(200).send({ status: paymentRes.data.respstat });
     } catch (error) {
+      console.log(error)
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .send({ message: 'Error creating paymnet' });
