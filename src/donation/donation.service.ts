@@ -58,15 +58,17 @@ export class DonationService {
             gte: parseInt(amount) || 0, // "gte" stands for "greater than or equal to"
           },
           kiosk_id: kiosk_id,
-          ...(req.user.role === "User" ? {user_id: req.user.userId} : {}),
+          ...(req.user.role === 'User' ? { user_id: req.user.userId } : {}),
           source: source,
           type: type,
           status: status,
-          user: {
-            phone: {
-              country: country,
+          ...(country && {
+            user: {
+              phone: {
+                country: country,
+              },
             },
-          },
+          }),
           created_at: date,
           org_id: org_id ? org_id.org_id : undefined,
         },
