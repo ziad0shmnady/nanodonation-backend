@@ -12,8 +12,10 @@ export class CardPointeService {
       password: process.env.CARDPOINTE_PASS,
     },
   });
-  constructor(private prismService: PrismaService,
-    private schedulerRegistry: SchedulerRegistry,) {}
+  constructor(
+    private prismService: PrismaService,
+    private schedulerRegistry: SchedulerRegistry,
+  ) {}
   // cron job to every 10 second
   // @Cron('*/10 * * * * *', { name: 'notifications' })
   // async testCronJob() {
@@ -33,10 +35,13 @@ export class CardPointeService {
           status: 'pending',
           source: body.source,
           type: body.type,
-          ...( body.type === "recurring" && {duration: `${body.frquency} ${body.duration}s`}),
+          ...(body.type === 'recurring' && {
+            duration: `${body.frquency} ${body.duration}s`,
+          }),
           donation_category_id: body.donation_category_id,
           org_id: body.org_id,
           kiosk_id: body.kiosk_id || null,
+          user_id: body.user_id || null,
         },
       });
       //add data from the request to object
@@ -52,20 +57,21 @@ export class CardPointeService {
       const paymentRes = await this.cardpointeapi.post('/auth', data);
       console.log(paymentRes.data);
       // check if the payment is success
-      const paymentStatus = paymentRes.data.respstat === 'A' ? 'success' : 'failed';
+      const paymentStatus =
+        paymentRes.data.respstat === 'A' ? 'success' : 'failed';
       await this.prismService.donation.update({
         where: {
           donation_id: donation.donation_id,
         },
         data: {
-          status:paymentStatus,
+          status: paymentStatus,
           transaction_id: paymentRes.data.retref,
         },
       });
 
       return res.status(200).send(paymentRes.data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .send({ message: 'Error creating paymnet' });
