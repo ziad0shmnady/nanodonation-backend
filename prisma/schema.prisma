@@ -11,16 +11,18 @@ datasource db {
 }
 
 model User {
-  user_id    String     @id @default(uuid())
+  user_id    String       @id @default(uuid())
   first_name String
   last_name  String
-  email      String     @unique
+  email      String       @unique
   password   String
   DOB        String
   phone      Phone?
   donation   Donation[]
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  cronJob    cronJob[]
+  creditCard creditCard[]
 }
 
 model Phone {
@@ -120,6 +122,9 @@ model Donation {
   type                 typeDonation?
   status               statusDonation?    @default(pending)
   duration             String?
+  frequency            Int?
+  last_four_digits     String?
+  email                String?            @unique
   category             Donation_Category? @relation(fields: [donation_category_id], references: [donation_category_id])
   donation_category_id String?
   org                  Organization?      @relation(fields: [org_id], references: [org_id])
@@ -161,6 +166,35 @@ model Kiosk {
   created_at DateTime     @default(now())
   updated_at DateTime     @updatedAt
 }
+
+model creditCard {
+  credit_card_id String    @id @default(uuid())
+  user_id        String    @unique
+  user           User      @relation(fields: [user_id], references: [user_id])
+  card_number    String
+  expiry_date    String
+  cvv            String
+  cron_job_id    cronJob[]
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+}
+
+model cronJob {
+  cron_job_id    String     @id @default(uuid())
+  user_id        String
+  user           User       @relation(fields: [user_id], references: [user_id])
+  amount         Float
+  duration       String
+  next_payment   DateTime
+  merchid        String
+  frequency      Int
+  counter        Int        @default(1)
+  credit_card    creditCard @relation(fields: [credit_card_id], references: [credit_card_id])
+  credit_card_id String
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
+}
+
 model Token {
   otp_id    String   @id @default(uuid())
   otp       String
@@ -168,6 +202,7 @@ model Token {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 enum Role {
   owner
   employee

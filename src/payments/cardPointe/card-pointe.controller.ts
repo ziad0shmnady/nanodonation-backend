@@ -11,18 +11,19 @@ export class CardPointeController {
   // donate endpoint
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.User)
-  @Post('donate')
-  async donate(
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    return await this.CardPointeService.donate(req,res);
+  @Post('userdonate')
+  async donate(@Req() req: Request, @Res() res: Response) {
+    return await this.CardPointeService.userDonate(req, res);
   }
-  @Post('publicDonate')
-  async publicDonate(
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    return await this.CardPointeService.donate(req,res);
+  @Post('guestDonate')
+  async publicDonate(@Req() req: Request, @Res() res: Response) {
+    return await this.CardPointeService.userDonate(req, res);
+  }
+  // get user credit card from token
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.User)
+  @Get('getCreditCard')
+  async getCreditCard(@Req() req: Request, @Res() res: Response) {
+    return await this.CardPointeService.getCreditCard(req, res);
   }
 }
