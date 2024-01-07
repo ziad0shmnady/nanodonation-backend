@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import axios from 'axios';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
+import { ca } from 'date-fns/locale';
 
 @Injectable()
 export class CardPointeService {
@@ -172,6 +173,21 @@ export class CardPointeService {
   async guestDonate(req, res) {
     try {
       const body = req.body;
+      //check if the email is exist
+      const user = await this.prismService.user.findUnique({
+        where: {
+          email: body.email,
+        },
+      });
+      if (!user) {
+        //ask user to create account
+        if (body.newAccount) {
+          //create new account & send email
+        } else {
+          //send email with donation details
+        }
+      }
+
       // add data from the request to donation database
       const donation = await this.prismService.donation.create({
         data: {
@@ -186,8 +202,8 @@ export class CardPointeService {
           donation_category_id: body.donation_category_id,
           org_id: body.org_id,
           kiosk_id: body.kiosk_id || null,
-          user_id: body.user_id || null,
           email: body.email,
+          user_id: user.user_id,
         },
       });
       //add data from the request to object
@@ -201,6 +217,7 @@ export class CardPointeService {
         save_care: body.save_card || false,
       };
 
+      //send payment
       const paymentRes = await this.cardpointeapi.post('/auth', data);
       console.log(paymentRes.data);
       // check if the payment is success
@@ -220,9 +237,16 @@ export class CardPointeService {
 
       if (paymentStatus === 'success') {
         if (body.type === 'recurring') {
-          const creditCard = await this.prismService.creditCard.create({
-            data: {
-              user_id: body.user_id,
+          const creditCard = await this.prismService.creditCard.upsert({
+            where: {
+              card_number: body.token,
+            },
+            update: {
+              expiry_date: body.expiry,
+              cvv: body.cvv,
+            },
+            create: {
+              user_id: user.user_id,
               expiry_date: body.expiry,
               card_number: body.token,
               cvv: body.cvv,
@@ -230,7 +254,7 @@ export class CardPointeService {
           });
           await this.prismService.cronJob.create({
             data: {
-              user_id: body.user_id,
+              user_id: user.user_id,
               amount: body.amount,
               duration: body.duration,
               frequency: body.frequency,
@@ -258,8 +282,9 @@ export class CardPointeService {
 
   // cronJob function
   // runn every day at 12 pm
-  @Cron('0 12 * * *')
+  @Cron('59 21 * * *')
   async cronJob(req, res) {
+    console.log('cron job running');
     // get all cronjobs if next payment is today exclude time
 
     const cronJobs = await this.prismService.cronJob.findMany({
@@ -313,8 +338,6 @@ export class CardPointeService {
           },
         });
       }
-
-      return res.send(paymentRes.data);
     }
   }
 }

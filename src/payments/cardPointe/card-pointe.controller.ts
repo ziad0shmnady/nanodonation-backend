@@ -17,7 +17,7 @@ export class CardPointeController {
   }
   @Post('guestDonate')
   async publicDonate(@Req() req: Request, @Res() res: Response) {
-    return await this.CardPointeService.userDonate(req, res);
+    return await this.CardPointeService.guestDonate(req, res);
   }
   // get user credit card from token
   @UseGuards(JwtAuthGuard, RolesGuard)

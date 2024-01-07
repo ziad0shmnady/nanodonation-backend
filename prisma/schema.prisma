@@ -124,7 +124,7 @@ model Donation {
   duration             String?
   frequency            Int?
   last_four_digits     String?
-  email                String?            @unique
+  email                String?
   category             Donation_Category? @relation(fields: [donation_category_id], references: [donation_category_id])
   donation_category_id String?
   org                  Organization?      @relation(fields: [org_id], references: [org_id])
@@ -169,9 +169,9 @@ model Kiosk {
 
 model creditCard {
   credit_card_id String    @id @default(uuid())
-  user_id        String    
+  user_id        String
   user           User      @relation(fields: [user_id], references: [user_id])
-  card_number    String     @unique
+  card_number    String    @unique
   expiry_date    String
   cvv            String
   cron_job_id    cronJob[]
